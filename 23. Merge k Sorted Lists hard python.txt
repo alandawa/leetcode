@@ -1,0 +1,59 @@
+在 Python 中使用中文註解（中文注释）是完全支持的，但需要注意以下幾點：
+
+1. **編碼設置**：確保你的 Python 源文件以 UTF-8 編碼保存，這樣可以支持包括中文在內的多種字符集。
+
+2. **註解格式**：Python 中的註解使用 `#` 符號，後面跟著文字，可以是中文或其他語言。Python 不像一些語言需要額外的標記或註解風格。
+
+3. **注释内容**：中文註解可以用來解釋代碼的功能、算法思想、變量名稱等，有助於代碼的理解和閱讀。
+
+以下是一個 Python 類的示例，展示了如何使用中文註解來解釋方法的作用和功能：
+
+```python
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        if not lists:
+            return None  # 如果 lists 為空，直接返回 None
+        
+        return self.merge_lists(lists, 0, len(lists) - 1)
+    
+    # merge_lists 方法：將 lists 整個數組進行合併排序
+    def merge_lists(self, lists: List[Optional[ListNode]], left: int, right: int) -> Optional[ListNode]:
+        if left == right:
+            return lists[left]  # 如果 left 等於 right，返回 lists[left]
+        
+        mid = left + (right - left) // 2
+        l1 = self.merge_lists(lists, left, mid)  # 遞歸排序左半部分
+        l2 = self.merge_lists(lists, mid + 1, right)  # 遞歸排序右半部分
+        
+        return self.merge_two_lists(l1, l2)  # 合併兩個已排序的鏈表
+    
+    # merge_two_lists 方法：合併兩個有序鏈表
+    def merge_two_lists(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = ListNode(-1)  # 創建虛擬頭節點
+        current = dummy  # current 用於遍歷並構建結果鏈表
+        
+        while l1 and l2:
+            if l1.val <= l2.val:
+                current.next = l1
+                l1 = l1.next
+            else:
+                current.next = l2
+                l2 = l2.next
+            current = current.next
+        
+        if l1:
+            current.next = l1
+        
+        if l2:
+            current.next = l2
+        
+        return dummy.next
+```
+
+在上面的例子中：
+
+- `mergeKLists` 方法處理給定的 lists，調用 `merge_lists` 方法進行合併排序。
+- `merge_lists` 方法使用中文註解解釋了递归排序的思想，以及如何使用分治法合併兩個已排序的子鏈表。
+- `merge_two_lists` 方法負責合併兩個有序鏈表，同樣使用了中文註解解釋每個步驟的作用。
+
+這樣的註解風格可以幫助他人更容易理解你的代碼，特別是當涉及到較複雜的算法或邏輯時。記住，註解應該寫得清晰簡潔，幫助理解代碼的意圖和實現細節。
