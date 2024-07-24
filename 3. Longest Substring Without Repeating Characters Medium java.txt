@@ -1,0 +1,87 @@
+
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length();
+        if (n == 0) return 0;
+
+       
+
+        int max = 1;
+        int xx = 1;
+        
+        // 遍歷字串陣列 ss，計算最長不重複子字串的長度
+        for (int i = 1; i < n; i++) {
+            if ( s.charAt(i)!=s.charAt(i - 1)) {
+                xx += 1;
+                if (xx > max) {
+                    max = xx;
+                }
+            } else {
+                xx = 1;
+            }
+        }
+
+        return max;
+    }
+}
+
+
+
+這段程式碼的目標是計算給定字串 `s` 中最長的不重複子字串的長度。讓我來解釋這段程式碼的運作方式以及可能需要進行的修正。
+
+### 程式碼分析
+
+這段程式碼的基本邏輯是使用兩個變數 `max` 和 `xx` 來追蹤目前最長的不重複子字串的長度：
+
+1. `max` 變數用於記錄找到的最長不重複子字串的長度。
+2. `xx` 變數則用來計算目前正在檢查的不重複子字串的長度。
+
+### 問題可能出現的地方
+
+1. **邊界條件：** 程式碼從 `i = 1` 開始遍歷字串 `s`，但是在比較 `s.charAt(i) != s.charAt(i - 1)` 時，可能會忽略掉第一個字符。
+2. **邏輯問題：** 目前的邏輯只檢查相鄰字符是否相同來計算不重複子字串的長度，但實際上需要更複雜的邏輯來處理所有可能的子字串。
+
+### 建議的修正
+
+為了正確計算最長不重複子字串的長度，我們可以使用哈希集合 (`HashSet`) 來存儲已經出現過的字符，並使用滑動窗口的技巧來動態調整窗口範圍。以下是修改後的程式碼：
+
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length();
+        if (n == 0) return 0;
+
+        // 使用 HashSet 來記錄出現過的字符
+        Set<Character> set = new HashSet<>();
+        int max = 0;
+        int left = 0;
+        int right = 0;
+
+        while (right < n) {
+            char currentChar = s.charAt(right);
+            // 如果字符已經在集合中，則從左邊開始移除字符，直到不再重複
+            while (set.contains(currentChar)) {
+                set.remove(s.charAt(left));
+                left++;
+            }
+            // 將新字符加入集合中
+            set.add(currentChar);
+            // 更新最長不重複子字串的長度
+            max = Math.max(max, right - left + 1);
+            // 右指針向右移動，擴展窗口大小
+            right++;
+        }
+
+        return max;
+    }
+}
+```
+
+### 修改後程式碼的說明
+
+- **滑動窗口和哈希集合：** 使用 `left` 和 `right` 兩個指針來構造滑動窗口，保證窗口內的字符都是唯一的。
+- **HashSet 的使用：** 使用 `HashSet` `set` 來記錄窗口內已經出現過的字符，以快速查找和移除重複字符。
+- **更新最長長度：** 在每次移動 `right` 指針時，計算並更新最長不重複子字串的長度 `max`。
+- **返回結果：** 最後返回 `max`，即為最長的不重複子字串的長度。
+
+這樣修改後的程式碼應該能夠正確計算並返回最長的不重複子字串的長度。希望這樣的解釋和修改能幫助你理解和應用於實際的程式開發中！
