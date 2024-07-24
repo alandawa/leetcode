@@ -1,0 +1,72 @@
+根據您提供的程式碼，我來幫您修正並重新實現找出三個數字和為零的功能，並將結果以列表的形式返回。
+
+修正後的程式碼如下所示：
+
+```java
+import java.util.*;
+
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        
+        // 排序數組，方便使用雙指針法
+        Arrays.sort(nums);
+        
+        // 遍歷數組，使用雙指針法找出三數之和為零的組合
+        for (int i = 0; i < nums.length - 2; i++) {
+            // 避免重複計算相同的第一個數字
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            
+            int left = i + 1;
+            int right = nums.length - 1;
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum == 0) {
+                    // 找到符合條件的組合，加入到結果列表中
+                    List<Integer> triplet = Arrays.asList(nums[i], nums[left], nums[right]);
+                    result.add(triplet);
+                    
+                    // 避免重複計算相同的第二個和第三個數字
+                    while (left < right && nums[left] == nums[left + 1]) {
+                        left++;
+                    }
+                    while (left < right && nums[right] == nums[right - 1]) {
+                        right--;
+                    }
+                    
+                    // 移動指針
+                    left++;
+                    right--;
+                } else if (sum < 0) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+        
+        return result;
+    }
+}
+```
+
+這段程式碼修正了幾個主要問題：
+
+1. **結果存儲**：
+   - 使用 `List<List<Integer>> result` 來存儲找到的所有符合條件的三數組合。
+   - 使用 `Arrays.asList(nums[i], nums[left], nums[right])` 將符合條件的三個數字放入列表中，然後加入到 `result` 中。
+
+2. **雙指針法**：
+   - 先對數組進行排序 `Arrays.sort(nums)`，這樣可以利用雙指針法來快速找出和為零的三數組合。
+   - 使用 `left` 和 `right` 兩個指針來從數組的兩端往中間移動，根據當前三個數字的和來調整指針位置。
+
+3. **避免重複計算**：
+   - 在找到一組符合條件的三數組合後，需要跳過相同的數字，避免重複計算相同的組合。
+   - 使用 `while` 迴圈來跳過重複的數字，並且在移動指針後更新 `left` 和 `right` 的位置。
+
+4. **效率提升**：
+   - 這段程式碼使用了雙指針法，時間複雜度為 O(n^2)，比起三層嵌套迴圈的方法效率更高。
+
+這樣修改後的程式碼應該可以正確地找出所有符合條件的三數組合，並且將結果以列表的形式返回。
