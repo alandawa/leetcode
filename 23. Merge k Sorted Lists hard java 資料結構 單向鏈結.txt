@@ -1,0 +1,83 @@
+
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null; // 如果 lists 為空或長度為0，直接返回null
+        }
+        
+        // 調用 mergeLists 方法將 lists 整個數組進行合併排序
+        return mergeLists(lists, 0, lists.length - 1);
+    }
+    
+    // mergeLists 方法：將 lists 數組中的鏈表從 left 到 right 區間進行合併排序
+    private ListNode mergeLists(ListNode[] lists, int left, int right) {
+        if (left == right) {
+            return lists[left]; // 如果 left 等於 right，返回 lists[left]
+        }
+        
+        // 計算中間點 mid
+        int mid = left + (right - left) / 2;
+        // 遞歸排序左半部分和右半部分的鏈表
+        ListNode l1 = mergeLists(lists, left, mid);
+        ListNode l2 = mergeLists(lists, mid + 1, right);
+        
+        // 合併兩個已排序的鏈表 l1 和 l2
+        return mergeTwoLists(l1, l2);
+    }
+    
+    // mergeTwoLists 方法：合併兩個有序鏈表 l1 和 l2
+    private ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(-1); // 創建虛擬頭節點
+        ListNode current = dummy; // current 用於遍歷並構建結果鏈表
+        
+        // 遍歷 l1 和 l2，將小的節點接入到 current.next，並將 current 後移
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                current.next = l1;
+                l1 = l1.next;
+            } else {
+                current.next = l2;
+                l2 = l2.next;
+            }
+            current = current.next;
+        }
+        
+        // 將剩餘部分接入到 current.next
+        if (l1 != null) {
+            current.next = l1;
+        }
+        
+        if (l2 != null) {
+            current.next = l2;
+        }
+        
+        // 返回合併後的有序鏈表的頭節點
+        return dummy.next;
+    }
+}
+
+
+---------------------------------------------------------------------------------------------------------
+
+### 解释：
+
+1. **mergeKLists 方法**：
+   - 这是主方法，接收一个 ListNode 数组 `lists`，其中每个元素是一个有序链表的头节点。
+   - 首先检查数组是否为空，如果为空直接返回 null。
+   - 调用 `mergeLists(lists, 0, lists.length - 1)` 方法，将整个数组分成两半进行归并排序。
+
+2. **mergeLists 方法**：
+   - 这是递归方法，用于将 lists 数组中的链表从 `left` 到 `right` 区间进行归并排序。
+   - 如果 `left == right`，说明只有一个链表，直接返回该链表。
+   - 否则，计算中间点 `mid`，分别对左半部分和右半部分进行递归排序，然后调用 `mergeTwoLists` 方法合并两个已排序的链表。
+
+3. **mergeTwoLists 方法**：
+   - 这个方法用于合并两个有序链表 `l1` 和 `l2`。
+   - 使用 `dummy` 节点作为结果链表的头节点，`current` 节点用于迭代构建结果链表。
+   - 比较 `l1` 和 `l2` 的当前节点值，将较小的节点接入到 `current.next`，然后将 `current` 后移。
+   - 如果其中一个链表遍历完毕，将另一个链表剩余部分直接接入到 `current.next`。
+   - 返回 `dummy.next`，即合并后的有序链表的头节点。
+
+这样，通过归并排序的方法，可以有效地将多个有序链表合并成一个有序链表，并且保持高效性能。
+
+
