@@ -1,0 +1,103 @@
+根据你提供的 C++ 函数定义，这是一个用于合并多个有序链表的函数 `mergeKLists`。以下我将为你完成这个函数的实现，并添加中文注释以便理解每个步骤的逻辑和作用。
+
+```cpp
+class Solution {
+public:
+    /**
+     * 合併多個有序鏈表
+     * @param lists 有序鏈表的指針數組
+     * @return 合併後的有序鏈表的頭節點指針
+     */
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        // 檢查 lists 是否為空，如果是，返回空指針
+        if (lists.empty()) {
+            return nullptr;
+        }
+        
+        // 調用 mergeLists 函數合併 lists 數組中的所有鏈表
+        return mergeLists(lists, 0, lists.size() - 1);
+    }
+    
+private:
+    /**
+     * 合併 lists 數組中指定區間的有序鏈表
+     * @param lists 有序鏈表的指針數組
+     * @param left 左邊界索引
+     * @param right 右邊界索引
+     * @return 合併後的有序鏈表的頭節點指針
+     */
+    ListNode* mergeLists(vector<ListNode*>& lists, int left, int right) {
+        // 如果 left 等於 right，表示只有一個鏈表，直接返回該鏈表的頭節點指針
+        if (left == right) {
+            return lists[left];
+        }
+        
+        // 計算中間索引
+        int mid = left + (right - left) / 2;
+        
+        // 遞歸合併左半部分和右半部分的鏈表
+        ListNode* l1 = mergeLists(lists, left, mid);
+        ListNode* l2 = mergeLists(lists, mid + 1, right);
+        
+        // 合併兩個已排序的鏈表
+        return mergeTwoLists(l1, l2);
+    }
+    
+    /**
+     * 合併兩個有序鏈表
+     * @param l1 第一個有序鏈表的頭節點指針
+     * @param l2 第二個有序鏈表的頭節點指針
+     * @return 合併後的有序鏈表的頭節點指針
+     */
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        // 創建虛擬頭節點
+        ListNode* dummy = new ListNode(-1);
+        ListNode* current = dummy;
+        
+        // 遍歷兩個鏈表，將小的節點接入到合併後的鏈表中
+        while (l1 && l2) {
+            if (l1->val <= l2->val) {
+                current->next = l1;
+                l1 = l1->next;
+            } else {
+                current->next = l2;
+                l2 = l2->next;
+            }
+            current = current->next;
+        }
+        
+        // 將剩餘部分接入到合併後的鏈表中
+        if (l1) {
+            current->next = l1;
+        }
+        
+        if (l2) {
+            current->next = l2;
+        }
+        
+        // 返回虛擬頭節點的下一個節點，即合併後的有序鏈表的頭節點指針
+        return dummy->next;
+    }
+};
+```
+
+### 解释：
+
+1. **mergeKLists 方法**：
+   - 这是一个公共方法，用于合并 `lists` 数组中的多个有序链表。
+   - 首先检查 `lists` 是否为空，如果为空直接返回空指针 `nullptr`。
+   - 调用 `mergeLists(lists, 0, lists.size() - 1)` 方法，将整个数组的链表进行合并排序。
+
+2. **mergeLists 方法**：
+   - 这是一个私有方法，递归地合并 `lists` 数组中指定区间 `[left, right]` 的有序链表。
+   - 如果 `left == right`，表示只有一个链表，直接返回该链表的头节点指针。
+   - 否则，计算中间索引 `mid`，分别递归合并左半部分和右半部分的链表，然后调用 `mergeTwoLists` 方法合并这两个已排序的子链表。
+
+3. **mergeTwoLists 方法**：
+   - 这个私有方法用于合并两个有序链表 `l1` 和 `l2`。
+   - 创建一个虚拟头节点 `dummy`，以及一个指针 `current` 用于构建合并后的链表。
+   - 遍历 `l1` 和 `l2`，将较小的节点接入到 `current->next`，并将 `current` 指针后移。
+   - 最后，将剩余部分直接接入到 `current->next`。
+   - 返回 `dummy->next`，即合并后的有序链表的头节点指针。
+
+这样的实现使用了分治法的思想，将问题拆分为较小的子问题并递归解决，最终将多个有序链表合并成一个有序链表。中文注释帮助理解每个函数的作用和实现细节，增强了代码的可读性和易理解性。
