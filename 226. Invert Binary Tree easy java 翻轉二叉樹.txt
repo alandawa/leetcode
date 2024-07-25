@@ -1,0 +1,63 @@
+要實現翻轉二叉樹（invert binary tree），我們可以使用遞歸的方法來交換每個節點的左右子樹。下面我們來實現這個 `invertTree` 方法。
+
+首先，確保你已經有了定義二叉樹節點的 `TreeNode` 類：
+
+```java
+/**
+ * Definition for a binary tree node.
+ */
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    
+    TreeNode() {}
+    
+    TreeNode(int val) { 
+        this.val = val; 
+    }
+    
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+```
+
+現在，我們來實現 `invertTree` 方法，該方法接收一個二叉樹的根節點 `root`，並返回翻轉後的二叉樹的根節點：
+
+```java
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        // Base case: 如果根節點為空，直接返回null
+        if (root == null) {
+            return null;
+        }
+        
+        // 遞歸交換左右子樹
+        TreeNode left = invertTree(root.left);
+        TreeNode right = invertTree(root.right);
+        
+        // 將左右子樹交換
+        root.left = right;
+        root.right = left;
+        
+        return root;
+    }
+}
+```
+
+### 解釋：
+
+1. **Base Case**：首先，檢查根節點是否為空。如果是空節點，直接返回`null`。
+
+2. **遞歸處理子樹**：使用遞歸來翻轉左子樹和右子樹。對於當前節點 `root`：
+   - 遞歸調用 `invertTree` 方法來獲取翻轉後的左子樹 `left`。
+   - 遞歸調用 `invertTree` 方法來獲取翻轉後的右子樹 `right`。
+
+3. **交換左右子樹**：將當前節點 `root` 的左子樹設置為翻轉後的右子樹 `right`，將右子樹設置為翻轉後的左子樹 `left`。
+
+4. **返回根節點**：返回經過翻轉處理後的根節點 `root`。
+
+這樣，遞歸地將每個節點的左右子樹進行交換，從而完成了整個二叉樹的翻轉操作。
