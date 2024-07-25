@@ -1,0 +1,63 @@
+這段程式碼是用來檢查兩個二元樹是否相同的Java解法。讓我們來解釋一下。
+
+### 題目解釋
+題目要求判斷兩個二元樹 `p` 和 `q` 是否相同。相同的定義是兩棵樹在結構上相同，且對應節點的值也相同。
+
+### TreeNode 類別
+在程式碼中定義了一個名為 `TreeNode` 的類別，這是一個二元樹節點的類別，其定義如下：
+```java
+public class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    
+    TreeNode() {}
+    
+    TreeNode(int val) {
+        this.val = val;
+    }
+    
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+```
+這個類別包含了三個成員變數：
+- `val`：節點的值。
+- `left`：指向左子樹的指標。
+- `right`：指向右子樹的指標。
+
+### 解題方法
+解題的方法是使用遞迴來比較兩棵樹：
+1. 首先，檢查特殊情況，如果兩棵樹都是 `null`，則它們視為相同。
+2. 如果其中一棵樹為 `null`，另一棵不是，則它們不相同。
+3. 如果兩棵樹都不是 `null`，則比較它們的節點值是否相同。
+4. 然後分別遞迴地比較它們的左子樹和右子樹，只有當所有子樹都相同才返回 `true`，否則返回 `false`。
+
+### 實現 `isSameTree` 方法
+根據上述思路，實現 `isSameTree` 方法如下：
+```java
+class Solution {
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        // 如果兩個樹都是null，則視為相同
+        if (p == null && q == null) {
+            return true;
+        }
+        // 如果其中一個樹為null，另一個不為null，則不相同
+        if (p == null || q == null) {
+            return false;
+        }
+        // 比較當前節點的值
+        if (p.val != q.val) {
+            return false;
+        }
+        // 遞迴比較左右子樹
+        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+    }
+}
+```
+這樣，當調用 `isSameTree` 方法時，會遞迴地比較兩棵樹，判斷它們是否相同。
+
+希望這樣的解釋對你有幫助！如果有任何疑問，請隨時提出。
