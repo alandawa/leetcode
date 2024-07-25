@@ -1,0 +1,48 @@
+如果你想使用階層（factorial）來處理爬樓梯的問題，這裡有一個示例程式碼。不過需要注意的是，使用階層來解決爬樓梯問題通常會在面對大數據範圍時效能較差，因為階層增長非常快，容易導致整數溢出或計算效率低下。
+
+以下是一個使用階層計算的解法：
+
+```java
+public class Solution {
+    public int climbStairs(int n) {
+        if (n <= 0) return 0;
+        if (n == 1) return 1;
+
+        // 計算階層 n!
+        int factorialN = factorial(n);
+
+        // 計算爬樓梯的方法數
+        int ways = 0;
+        for (int k = 0; k <= n / 2; k++) {
+            int combinations = combination(n - k, k); // C(n-k, k) 或 C(n-k, n-2k) 都可以
+            ways += combinations;
+        }
+
+        return ways;
+    }
+
+    // 計算階層的函數
+    private int factorial(int n) {
+        if (n <= 1) return 1;
+        int result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
+
+    // 計算組合數的函數 C(n, k)
+    private int combination(int n, int k) {
+        return factorial(n) / (factorial(k) * factorial(n - k));
+    }
+}
+```
+
+這段程式碼使用了兩個輔助函數 `factorial` 和 `combination` 來計算階層和組合數。具體來說：
+
+- `factorial(n)` 函數計算 `n!` 的值。
+- `combination(n, k)` 函數計算組合數 `C(n, k)`，即從 `n` 個物件中選取 `k` 個的組合數。
+
+在 `climbStairs` 方法中，遍歷 `k` 從 `0` 到 `n/2` 的範圍，計算每一步可能的組合數，並將其累加到 `ways` 變數中。這樣可以得到爬樓梯的所有可能方法數。
+
+然而，使用階層來解決爬樓梯問題的效率並不高，因為階層增長迅速，可能導致整數溢出或計算時間過長。推薦使用動態規劃或者遞迴的方式來解決爬樓梯問題，這兩種方法在效率和正確性上更為優越。
