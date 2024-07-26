@@ -1,0 +1,96 @@
+206. Reverse Linked List
+206. 反向鏈表
+Given the head of a singly linked list, reverse the list, and return the reversed list.
+head 給定一個單向鏈表，反轉清單，並返回反轉的清單。
+--------------------------------------------------------------------
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null; // 初始時沒有前一個節點
+        ListNode current = head; // 開始時從頭節點開始遍歷
+        
+        while (current != null) {
+            ListNode nextTemp = current.next; // 儲存當前節點的下一個節點
+            current.next = prev; // 反轉當前節點的指向
+            prev = current; // 更新前一個節點
+            current = nextTemp; // 更新當前節點
+        }
+        
+        return prev; // 當遍歷完成時，prev 是新的頭節點
+    }
+}
+------------------------------------------------------------------------------------
+當前的 Java 程式碼定義了一個 `ListNode` 類別，用來表示單向鏈表的節點。這個 `ListNode` 類別有三個構造函數和兩個屬性：`val` 和 `next`。`val` 儲存節點的數值，而 `next` 指向下一個節點。
+
+```java
+public class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int val) { this.val = val; }
+    ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+}
+```
+
+在這段代碼中，`ListNode` 類別可以用來創建一個鏈表節點，其值可以是任何整數，並且可以指向鏈表中的下一個節點。
+
+接下來是 `Solution` 類別中的 `reverseList` 方法。這個方法目前是空的，目的是反轉單向鏈表。
+
+```java
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        
+    }
+}
+```
+
+**功能說明：**
+- `reverseList` 方法的目標是反轉一個單向鏈表。
+- 這個方法會接受一個 `ListNode` 類型的 `head` 作為參數，`head` 是鏈表的起始節點。
+- 反轉鏈表後，返回新的鏈表頭部。
+
+**實作思路：**
+要實作這個方法，我們可以使用迭代或者遞歸的方式來完成反轉操作。這裡是迭代法的步驟：
+
+1. **初始化變數：** 
+   - `prev` 用來儲存當前節點的前一個節點，初始化為 `null`。
+   - `current` 用來遍歷鏈表，初始化為 `head`。
+
+2. **遍歷鏈表：**
+   - 在每一步中，將 `current` 的 `next` 節點儲存到 `nextTemp`。
+   - 將 `current` 的 `next` 指向 `prev`，完成當前節點的反轉。
+   - 更新 `prev` 為 `current`，`current` 為 `nextTemp`，繼續遍歷。
+
+3. **完成反轉：**
+   - 當 `current` 為 `null` 時，遍歷結束，`prev` 將會指向新的鏈表頭部。
+
+**示例實作：**
+
+```java
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null; // 初始時沒有前一個節點
+        ListNode current = head; // 開始時從頭節點開始遍歷
+        
+        while (current != null) {
+            ListNode nextTemp = current.next; // 儲存當前節點的下一個節點
+            current.next = prev; // 反轉當前節點的指向
+            prev = current; // 更新前一個節點
+            current = nextTemp; // 更新當前節點
+        }
+        
+        return prev; // 當遍歷完成時，prev 是新的頭節點
+    }
+}
+```
+
+這段代碼會將整個鏈表反轉，返回反轉後的新頭節點。如果你有任何問題或者需要進一步的解釋，隨時告訴我！
