@@ -1,0 +1,112 @@
+322. Coin Change 
+322. 硬幣零錢
+
+You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+您將獲得一個表示不同面額硬幣的整數陣列 coins 和一個表示總金額的整數 amount 。
+
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+返回您需要彌補該金額的最少硬幣數量。如果該金額無法由硬幣的任何組合組成，則傳回 -1 。
+
+You may assume that you have an infinite number of each kind of coin.
+你可以假設你有無限數量的每種硬幣。
+
+-----------------------------------------------------------------------
+
+好的，让我们详细解释一下动态规划 (DP) 解决零钱兑换问题的代码。我们将一步一步地解析每部分的功能和逻辑。
+
+### 问题背景
+
+您需要找出凑成一个给定金额所需的最少硬币数。如果无法凑成该金额，返回 -1。这个问题可以用动态规划来解决。
+
+### 动态规划代码
+
+```java
+import java.util.Arrays;
+
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        // 创建一个 dp 数组，dp[i] 表示凑成金额 i 所需的最少硬币数
+        int[] dp = new int[amount + 1];
+        // 初始化 dp 数组，设为一个较大的值，表示初始时无法凑成该金额
+        Arrays.fill(dp, amount + 1);
+        dp[0] = 0; // 凑成金额0需要0个硬币
+
+        // 对于每个硬币
+        for (int coin : coins) {
+            // 更新 dp 数组
+            for (int x = coin; x <= amount; x++) {
+                // 如果 dp[x - coin] 是一个可以凑成的金额
+                if (dp[x - coin] != amount + 1) {
+                    dp[x] = Math.min(dp[x], dp[x - coin] + 1);
+                }
+            }
+        }
+
+        // 如果 dp[amount] 仍然是初始值，表示无法凑成该金额
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+}
+```
+
+### 详细解释
+
+#### 1. 创建 `dp` 数组
+
+```java
+int[] dp = new int[amount + 1];
+```
+
+- **`dp[i]`**：表示凑成金额 `i` 所需的最少硬币数。我们需要一个长度为 `amount + 1` 的数组，因为我们需要处理从金额 0 到 `amount` 的所有情况。
+
+#### 2. 初始化 `dp` 数组
+
+```java
+Arrays.fill(dp, amount + 1);
+dp[0] = 0;
+```
+
+- **`Arrays.fill(dp, amount + 1)`**：初始化 `dp` 数组中的所有元素为一个较大的值（`amount + 1`），这是一个不可能的值，用于表示初始时我们还不知道如何凑成这些金额。这个值大于任何可能的最小硬币数。
+  
+- **`dp[0] = 0`**：凑成金额 0 不需要任何硬币，因此 `dp[0]` 设置为 0。
+
+#### 3. 更新 `dp` 数组
+
+```java
+for (int coin : coins) {
+    for (int x = coin; x <= amount; x++) {
+        if (dp[x - coin] != amount + 1) {
+            dp[x] = Math.min(dp[x], dp[x - coin] + 1);
+        }
+    }
+}
+```
+
+- **外层循环 (`for (int coin : coins)`)**：
+  - 遍历每种硬币 `coin`，更新 `dp` 数组。
+
+- **内层循环 (`for (int x = coin; x <= amount; x++)`)**：
+  - 对于每个金额 `x`，尝试用当前硬币 `coin` 来更新 `dp[x]`。
+
+- **`if (dp[x - coin] != amount + 1)`**：
+  - 检查 `dp[x - coin]` 是否是有效值（即是否可以用硬币凑成金额 `x - coin`）。如果是有效值，则说明我们可以通过在金额 `x - coin` 上再加一个 `coin` 来凑成金额 `x`。
+
+- **`dp[x] = Math.min(dp[x], dp[x - coin] + 1)`**：
+  - 更新 `dp[x]`，选择凑成金额 `x` 的最小硬币数。如果使用硬币 `coin`，则 `dp[x - coin] + 1` 表示凑成金额 `x` 的硬币数。如果 `dp[x]` 当前的值比这个值大，则更新 `dp[x]`。
+
+#### 4. 返回结果
+
+```java
+return dp[amount] > amount ? -1 : dp[amount];
+```
+
+- **`dp[amount] > amount`**：
+  - 如果 `dp[amount]` 仍然是初始化时的值（`amount + 1`），则表示没有办法凑成该金额，返回 -1。
+
+- **否则**：
+  - 返回 `dp[amount]`，即凑成金额 `amount` 所需的最少硬币数。
+
+### 总结
+
+这个动态规划算法通过构建一个 `dp` 数组来保存每个金额所需的最少硬币数。通过逐步更新这个数组，确保每个金额的最优解都被找到。最终，算法返回 `dp[amount]` 或 -1，告诉我们是否能用最少的硬币凑成给定的金额。
+
+希望这个详细的解释能帮助您理解代码的每一部分！如果还有任何疑问，请随时告诉我。
