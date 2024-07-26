@@ -1,0 +1,71 @@
+141. Linked List Cycle
+141. 鏈表迴圈
+
+
+
+
+Given head, the head of a linked list, determine if the linked list has a cycle in it.
+給定 head ，鏈表的頭部，確定鏈錶中是否有迴圈。
+
+There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer. Internally, pos is used to denote the index of the node that tail's next pointer is connected to. Note that pos is not passed as a parameter.
+如果清單中有一些節點可以通過連續跟隨 next 指標再次訪問，則鏈表中存在一個迴圈。在內部， pos 用於表示尾 next 部指標所連接的節點的索引。請注意，它不會 pos 作為參數傳遞。
+
+Return true if there is a cycle in the linked list. Otherwise, return false.
+如果鏈表中有迴圈，則返回 true 。否則，返回 false 。
+----------------------------------------------------------------
+
+當你遇到這個問題時，你需要確定一個單向鏈表是否存在循環。這裡是如何進行解釋的：
+
+**問題描述：**
+給定一個單向鏈表的頭節點，你需要檢查這個鏈表是否包含循環。如果存在循環，函數應該返回 `true`，否則返回 `false`。
+
+**解決方案：**
+
+最常用的解決方案是使用「龜兔賽跑」算法（Floyd's Cycle-Finding Algorithm），這是一種有效的檢查鏈表是否存在循環的方法。這個算法使用兩個指針，一個慢指針和一個快指針：
+
+1. **慢指針**：每次移動一步。
+2. **快指針**：每次移動兩步。
+
+**步驟：**
+
+1. 初始化兩個指針 `slow` 和 `fast`，都指向鏈表的頭節點 `head`。
+2. 在 `while` 循環中，讓 `slow` 每次移動一步，`fast` 每次移動兩步。
+3. 如果 `fast` 指向 `null` 或者 `fast.next` 指向 `null`，則鏈表不包含循環，返回 `false`。
+4. 如果 `slow` 和 `fast` 相遇（即指向相同的節點），則鏈表包含循環，返回 `true`。
+
+**實作程式碼：**
+
+```java
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        // 定義兩個指針，slow 和 fast
+        ListNode slow = head;
+        ListNode fast = head;
+        
+        // 當 fast 和 fast.next 都不為 null 時
+        while (fast != null && fast.next != null) {
+            // slow 每次移動一步
+            slow = slow.next;
+            // fast 每次移動兩步
+            fast = fast.next.next;
+            
+            // 如果 slow 和 fast 相遇，則存在循環
+            if (slow == fast) {
+                return true;
+            }
+        }
+        
+        // 如果 fast 指向 null，則鏈表無循環
+        return false;
+    }
+}
+```
+
+**解釋：**
+
+- **`slow` 指針** 會每次走一步，因此它的速度較慢。
+- **`fast` 指針** 每次走兩步，它的速度較快。
+- 如果鏈表有循環，那麼 `fast` 會追上 `slow`，因為 `fast` 的速度比 `slow` 快。
+- 如果鏈表沒有循環，`fast` 會先於 `slow` 到達鏈表的末尾，因為它每次移動兩步，而 `slow` 只有一步。
+
+這樣，這個算法能夠在 O(n) 的時間內完成檢查，並且只使用 O(1) 的額外空間，非常高效。
