@@ -1,0 +1,25 @@
+217. Contains Duplicate
+ 217. 包含重複項
+
+Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.
+給定一個整數陣列 nums ，如果任何值在陣列中至少出現兩次，則返回，如果每個元素都不同，則返回 true false 。
+----------------------------------------------------------
+import java.util.Arrays;
+
+class Solution {
+    public boolean containsDuplicate(int[] nums) {
+        boolean Duplicate=false;
+        
+        Arrays.sort(nums);
+        
+        for (int i=0;i<nums.length-1 ; i++){
+            if(nums[i+1]-nums[i]==0){
+            Duplicate=true;
+            break;
+            }
+        }
+
+    return Duplicate;
+
+    }
+}
