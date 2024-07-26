@@ -1,0 +1,57 @@
+You are given the heads of two sorted linked lists list1 and list2.
+您將獲得兩個排序鏈表 list1 的頭部和 list2 .
+
+Merge the two lists into one sorted list. The list should be made by splicing together the nodes of the first two lists.
+將兩個清單合併為一個排序列表。清單應通過將前兩個清單的節點拼接在一起來製作。
+
+Return the head of the merged linked list.
+返回合併鏈表的頭部。
+
+-----------------------------------------------------------------------------
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+
+
+   
+    // mergeTwoLists 方法：合併兩個有序鏈表 list1 和 list2
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode dummy = new ListNode(-1); // 創建虛擬頭節點
+        ListNode current = dummy; // current 用於遍歷並構建結果鏈表
+        
+        // 遍歷 list1 和 list2，將小的節點接入到 current.next，並將 current 後移
+        while (list1 != null && list2 != null) {
+            if (list1.val <= list2.val) {
+                current.next = list1;
+                list1 = list1.next;
+            } else {
+                current.next = list2;
+                list2 = list2.next;
+            }
+            current = current.next;
+        }
+        
+        // 將剩餘部分接入到 current.next
+        if (list1 != null) {
+            current.next = list1;
+        }
+        
+        if (list2 != null) {
+            current.next = list2;
+        }
+        
+        // 返回合併後的有序鏈表的頭節點
+        return dummy.next;
+    }
+
+
+
+}
