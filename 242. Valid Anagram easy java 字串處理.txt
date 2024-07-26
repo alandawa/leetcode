@@ -1,0 +1,118 @@
+Given two strings s and t, return true if t is an anagram of s, and false otherwise.
+給定兩個字串 s 和 t ，返回 true if t 是 s 和 false 的字謎。
+
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+字謎是通過重新排列不同單詞或短語的字母而形成的單詞或短語，通常只使用一次所有原始字母。
+-------------------------------------------------------------------------------------------
+要判斷兩個字串 `s` 和 `t` 是否為相同字母重排而成的字串（即是否為「字母異位詞」或「anagram」），我們需要確保 `t` 是 `s` 的重新排列，並且兩者字母數量完全一致。以下是實現這一判斷的幾種方法及其說明：
+
+### 方法一：使用排序（Sort）
+
+1. **將兩個字串排序**：如果兩個字串是字母異位詞，那麼排序後的結果應該是相同的。
+2. **比較排序後的結果**：如果排序後的字串相同，則 `t` 是 `s` 的字母異位詞。
+
+**代碼實現：**
+```java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        // 如果字串長度不同，直接返回 false
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        // 將兩個字串轉為字符數組並排序
+        char[] sArray = s.toCharArray();
+        char[] tArray = t.toCharArray();
+        Arrays.sort(sArray);
+        Arrays.sort(tArray);
+
+        // 比較排序後的字串
+        return Arrays.equals(sArray, tArray);
+    }
+}
+```
+
+### 方法二：使用字符計數（Count）
+
+1. **創建計數器**：使用兩個數組來計數每個字母出現的次數。
+2. **遍歷字串並更新計數器**：對於字串 `s`，增加相應字母的計數；對於字串 `t`，減少相應字母的計數。
+3. **檢查計數器是否為零**：如果所有計數器值最終都為零，則 `t` 是 `s` 的字母異位詞。
+
+**代碼實現：**
+```java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        // 如果字串長度不同，直接返回 false
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        // 創建一個大小為 26 的整數數組來計數字母（假設只包含小寫字母）
+        int[] count = new int[26];
+
+        // 遍歷字串 s 和 t，更新計數器
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+            count[t.charAt(i) - 'a']--;
+        }
+
+        // 檢查計數器是否所有值都為零
+        for (int i : count) {
+            if (i != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+### 方法三：使用 `HashMap`（適用於擴展情況）
+
+1. **創建一個 `HashMap` 來計數**：用來記錄每個字母在 `s` 和 `t` 中出現的次數。
+2. **更新 `HashMap`**：對於字串 `s`，增加字母計數；對於字串 `t`，減少字母計數。
+3. **檢查 `HashMap`**：如果所有計數為零，則 `t` 是 `s` 的字母異位詞。
+
+**代碼實現：**
+```java
+import java.util.HashMap;
+
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        // 如果字串長度不同，直接返回 false
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        // 創建 HashMap 來計數
+        HashMap<Character, Integer> countMap = new HashMap<>();
+
+        // 遍歷字串 s，增加計數
+        for (char c : s.toCharArray()) {
+            countMap.put(c, countMap.getOrDefault(c, 0) + 1);
+        }
+
+        // 遍歷字串 t，減少計數
+        for (char c : t.toCharArray()) {
+            if (!countMap.containsKey(c)) {
+                return false;
+            }
+            countMap.put(c, countMap.get(c) - 1);
+            if (countMap.get(c) < 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+### 總結
+
+- **排序方法**：簡單明瞭，但需要 O(n log n) 的時間複雜度。
+- **字符計數方法**：時間複雜度為 O(n)，空間複雜度為 O(1)（對於固定字母範圍）。
+- **HashMap 方法**：時間複雜度為 O(n)，空間複雜度也為 O(n)，對於較大的字母範圍可以擴展使用。
+
+這三種方法都能有效地判斷兩個字串是否為字母異位詞，選擇哪種方法可以根據具體需求進行。
