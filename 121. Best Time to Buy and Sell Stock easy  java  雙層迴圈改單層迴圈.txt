@@ -1,0 +1,147 @@
+121. Best Time to Buy and Sell Stock
+121. 買賣股票的最佳時機
+You are given an array prices where prices[i] is the price of a given stock on the ith day.
+你得到一個陣列 prices ，其中 prices[i] 是給定股票當天 ith 的價格。
+
+You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
+您希望通過選擇一天購買一隻股票並在未來選擇另一天出售該股票來最大化您的利潤。
+
+Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
+返回您可以從此交易中獲得的最大利潤。如果您無法獲得任何利潤，請返回 0 。
+
+---------------------------------------------------------------------
+
+這段程式碼的目的是計算在給定的股價序列中，能夠獲得的最大利潤。該算法目前的時間複雜度是 O(n^2)，因為它使用了兩層迴圈來計算每一對股價之間的利潤。這樣的複雜度在處理大數據時會非常慢。
+
+可以使用更高效的演算法來提高執行速度。這裡有一個更快的解法，時間複雜度為 O(n)，只需要一個迴圈就能解決問題。以下是改進後的程式碼及說明：
+
+### 改進後的程式碼：
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length == 0) {
+            return 0;
+        }
+        
+        int minPrice = Integer.MAX_VALUE;//它的值是 2^31-1，即 2147483647。这个常量在 java.lang.Integer 类中定义。
+        int maxProfit = 0;
+
+        for (int price : prices) {
+            // 更新當前最低價格
+            if (price < minPrice) {
+                minPrice = price;
+            }
+            // 計算當前利潤並更新最大利潤
+            int profit = price - minPrice;
+            if (profit > maxProfit) {
+                maxProfit = profit;
+            }
+        }
+
+        return maxProfit;
+    }
+}
+```
+
+### 優化說明：
+
+1. **單次迴圈**：這個改進後的解法只需要一個迴圈遍歷所有的股價，因此時間複雜度是 O(n)，其中 n 是股價數組的長度。這比原來的 O(n^2) 時間複雜度要高效得多。
+
+2. **記錄最低價格**：在迴圈中，我們持有一個變數 `minPrice` 來記錄當前遇到的最低股價。這樣，我們可以隨時計算當前股價與 `minPrice` 之間的利潤。
+
+3. **計算最大利潤**：每當計算出一個新的利潤時，我們會將它與當前的 `maxProfit` 比較，並更新 `maxProfit` 為較大的值。
+
+### 優勢：
+
+- **性能提升**：因為只有一個迴圈，所以這個解法在處理大規模股價數據時比原來的算法要快得多。
+- **簡單明瞭**：算法更加簡單，易於理解和維護。
+
+這樣改進後，你的程式碼在大多數情況下將能顯著提升運行速度，尤其是在處理長度很大的股價數組時。
+------------------------------------------------------------------------------------------------------
+
+當然，我會在你的程式碼中加上詳細的註解，以幫助你更好地理解每一部分的作用：
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        // 檢查輸入數組是否為空或長度為0
+        if (prices == null || prices.length == 0) {
+            return 0; // 如果是空數組，沒有利潤可以獲得
+        }
+        
+        // 初始化當前最低價格為最大整數值
+        int minPrice = Integer.MAX_VALUE;
+        // 初始化最大利潤為0
+        int maxProfit = 0;
+
+        // 遍歷股價數組中的每一個價格
+        for (int price : prices) {
+            // 更新當前最低價格，如果當前價格比已知的最低價格還低
+            if (price < minPrice) {
+                minPrice = price;
+            }
+            // 計算當前股價與最低價格之間的利潤
+            int profit = price - minPrice;
+            // 如果當前利潤比已知的最大利潤還高，則更新最大利潤
+            if (profit > maxProfit) {
+                maxProfit = profit;
+            }
+        }
+
+        // 返回計算出的最大利潤
+        return maxProfit;
+    }
+}
+```
+
+### 註解說明：
+
+1. **檢查輸入數組**：
+   ```java
+   if (prices == null || prices.length == 0) {
+       return 0;
+   }
+   ```
+   - 這段代碼檢查 `prices` 是否為 `null` 或空數組。如果是，返回 `0`，因為沒有股價無法進行買賣，也就無法獲得利潤。
+
+2. **初始化變數**：
+   ```java
+   int minPrice = Integer.MAX_VALUE;
+   int maxProfit = 0;
+   ```
+   - `minPrice` 用來記錄到目前為止遇到的最低股價，初始化為 `Integer.MAX_VALUE` 是為了確保任何實際的股價都會比這個值小。
+   - `maxProfit` 用來記錄從最低股價到當前股價能獲得的最大利潤，初始化為 `0`，表示在開始時沒有利潤。
+
+3. **遍歷股價數組**：
+   ```java
+   for (int price : prices) {
+   ```
+   - 這裡使用增強型 `for` 迴圈遍歷 `prices` 數組中的每一個股價。
+
+4. **更新最低價格**：
+   ```java
+   if (price < minPrice) {
+       minPrice = price;
+   }
+   ```
+   - 如果當前價格 `price` 小於已知的 `minPrice`，則更新 `minPrice` 為當前價格。這樣就確保 `minPrice` 始終是到目前為止遇到的最低股價。
+
+5. **計算當前利潤並更新最大利潤**：
+   ```java
+   int profit = price - minPrice;
+   if (profit > maxProfit) {
+       maxProfit = profit;
+   }
+   ```
+   - 計算當前股價 `price` 和最低價格 `minPrice` 之間的利潤。
+   - 如果當前利潤 `profit` 大於已知的 `maxProfit`，則更新 `maxProfit` 為當前的 `profit`。
+
+6. **返回最大利潤**：
+   ```java
+   return maxProfit;
+   ```
+   - 返回在遍歷所有股價後得到的最大利潤。
+
+這個算法的關鍵在於一次遍歷股價數組即可確定最佳買入和賣出點，從而達到 O(n) 的時間複雜度。
+
