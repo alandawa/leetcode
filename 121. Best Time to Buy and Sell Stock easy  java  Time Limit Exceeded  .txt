@@ -1,0 +1,30 @@
+121. Best Time to Buy and Sell Stock
+121. 買賣股票的最佳時機
+You are given an array prices where prices[i] is the price of a given stock on the ith day.
+你得到一個陣列 prices ，其中 prices[i] 是給定股票當天 ith 的價格。
+
+You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
+您希望通過選擇一天購買一隻股票並在未來選擇另一天出售該股票來最大化您的利潤。
+
+Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
+返回您可以從此交易中獲得的最大利潤。如果您無法獲得任何利潤，請返回 0 。
+
+---------------------------------------------------------------------
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        int profit=0;
+        int maxprofit=0;
+
+        for(int i=prices.length-1;i>0;i--){
+            int init=prices[i];
+            for(int j=i;j>=0;j--){
+                profit=init-prices[j];
+                if(profit>maxprofit){
+                    maxprofit=profit;
+                }
+            }
+        }
+        return maxprofit;
+    }
+}
