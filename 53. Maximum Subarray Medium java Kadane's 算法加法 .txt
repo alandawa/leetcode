@@ -1,0 +1,69 @@
+53. Maximum Subarray 
+
+53. 最大子陣列
+
+Given an integer array nums, find the
+給定一個整數陣列 nums ，找到
+subarray 子陣列
+ with the largest sum, and return its sum.
+以最大的和，並返回其總和。
+
+
+
+-----------------------------------------------------
+當然，這裡是繁體中文的翻譯：
+
+### 問題描述
+給定一個整數數組 `nums`，找出其中具有最大總和的連續子數組（包含至少一個數字），並返回它的總和。
+
+### 解決方案
+解決這個問題的標準方法是使用 **Kadane's 算法**。以下是 Kadane's 算法的簡要概述：
+
+1. **初始化**：
+   - `maxCurrent` 設為數組的第一個元素。這表示當前位置結束的子數組的最大總和。
+   - `maxGlobal` 也設為相同的值。這用來跟蹤到目前為止找到的全局最大子數組總和。
+
+2. **遍歷數組**：
+   - 對於每個元素，決定是否將其加到現有的子數組 (`maxCurrent`) 中，或者用當前元素開始一個新的子數組。根據需要更新 `maxCurrent`。
+   - 如果 `maxCurrent` 大於 `maxGlobal`，則更新 `maxGlobal`。
+
+3. **返回**：
+   - 返回 `maxGlobal`，它包含了任何連續子數組的最大總和。
+
+下面是使用 Kadane's 算法實現的代碼：
+
+```java
+class Solution {
+    public int maxSubArray(int[] nums) {
+        // 邊界情況：如果數組為空，我們應該處理它（儘管問題假設數組非空）。
+        if (nums.length == 0) {
+            return 0; // 或拋出異常，如果你想以不同方式處理
+        }
+
+        int maxCurrent = nums[0]; // 當前位置結束的子數組的最大總和
+        int maxGlobal = nums[0];  // 全局最大總和
+
+        for (int i = 1; i < nums.length; i++) {
+            // 決定是否將 nums[i] 加到現有的子數組中，或者用 nums[i] 開始一個新的子數組
+            maxCurrent = Math.max(nums[i], maxCurrent + nums[i]);
+            // 如有必要，更新全局最大值
+            maxGlobal = Math.max(maxGlobal, maxCurrent);
+        }
+
+        return maxGlobal;
+    }
+}
+```
+
+### 解釋：
+- **初始化**：
+  - `maxCurrent` 從數組的第一個元素開始。因為最小的子數組至少包含第一個元素。
+  - `maxGlobal` 也從第一個元素開始，並會跟蹤目前為止找到的最大子數組總和。
+
+- **遍歷**：
+  - 對於每個元素，`maxCurrent` 被更新為包含當前元素的子數組的總和，或者僅以當前元素開始一個新的子數組。
+  - 如果 `maxCurrent` 大於 `maxGlobal`，則更新 `maxGlobal` 以確保它捕捉到最大值。
+
+這個解決方案的時間複雜度為 O(n)，空間複雜度為 O(1)，對於這個問題來說非常高效。
+
+如果你有任何特定的限制或額外的要求，隨時告訴我！
