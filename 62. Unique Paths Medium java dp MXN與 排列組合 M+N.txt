@@ -1,0 +1,73 @@
+在處理速度方面，這兩個方法各有優缺點。下面是對這兩種方法的比較：
+
+### 1. 組合方法 (Combinatorial Approach)
+
+**時間複雜度**: \( O(m + n) \)
+
+**優點**:
+- **效率高**：組合方法在計算步驟上比動態規劃方法更少。計算組合數的方法主要是使用乘法和除法來完成，通常這比遍歷整個 \( m \times n \) 表格要快。
+- **空間複雜度低**：組合方法只需要計算和存儲有限數量的值，因此空間複雜度主要來自於計算組合數的額外變量，通常是 \( O(1) \) 空間。
+
+**缺點**:
+- **數字處理**：在計算組合數時，可能會遇到非常大的數字，這可能會導致數值溢出。儘管在 Java 中可以使用 `BigInteger` 來處理這個問題，但這會使得代碼更複雜。
+
+class Solution {
+    public int uniquePaths(int m, int n) {
+        // Helper function to calculate combinations
+        return binomialCoefficient(m + n - 2, m - 1);
+    }
+
+    // Function to compute binomial coefficient C(n, k)
+    private int binomialCoefficient(int n, int k) {
+        if (k > n - k) {
+            k = n - k;  // Take advantage of symmetry
+        }
+        long res = 1;
+        for (int i = 0; i < k; ++i) {
+            res = res * (n - i) / (i + 1);
+        }
+        return (int)res;
+    }
+}
+
+
+### 2. 動態規劃方法 (Dynamic Programming Approach)
+
+**時間複雜度**: \( O(m \times n) \)
+
+**優點**:
+- **直觀易懂**：動態規劃方法對於大多數人來說更容易理解，因為它基於逐步構建解決方案的理念。
+- **不容易數值溢出**：使用整數數組來存儲中間結果，通常能夠在普通的整數範圍內處理這些數字，因此不容易遇到溢出問題。
+
+**缺點**:
+- **空間複雜度**: 動態規劃方法需要 \( O(m \times n) \) 的空間來存儲每個格子的計數值，這對於非常大的網格可能會成為一個問題。
+
+### 總結
+
+- **速度**: 在時間效率上，組合方法通常比動態規劃方法更快。因為組合方法的時間複雜度是 \( O(m + n) \)，而動態規劃方法的時間複雜度是 \( O(m \times n) \)。
+- **實用性**: 如果網格非常大，且處理速度是最重要的考量，組合方法可能會更好。但是，組合方法需要處理可能很大的數字，這在一些編程語言中可能會引起數值溢出問題。動態規劃方法則較為直觀且不容易遇到數值溢出問題，但對於非常大的網格，可能需要更多的內存。
+
+在實際應用中，如果你能夠處理大數字並且希望最佳性能，組合方法可能是最佳選擇。如果你更關心代碼的簡單性和數值穩定性，動態規劃方法則可能是更好的選擇。
+
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        
+        // Initialize the first row and first column
+        for (int i = 0; i < m; i++) {
+            dp[i][0] = 1;
+        }
+        for (int j = 0; j < n; j++) {
+            dp[0][j] = 1;
+        }
+        
+        // Fill the rest of the dp array
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        
+        return dp[m - 1][n - 1];
+    }
+}
