@@ -1,0 +1,28 @@
+33. Search in Rotated Sorted Array
+33. 在旋轉排序陣列中搜索
+
+There is an integer array nums sorted in ascending order (with distinct values).
+有一個按升序排序的整數數位（ nums 具有不同的值）。
+
+Prior to being passed to your function, nums is possibly rotated at an unknown pivot index k (1 <= k < nums.length) such that the resulting array is [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]] (0-indexed). For example, [0,1,2,4,5,6,7] might be rotated at pivot index 3 and become [4,5,6,7,0,1,2].
+在傳遞給函數之前， nums 可能在未知的樞軸索引 k （ 1 <= k < nums.length ） 處旋轉，使得生成的陣列為 [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]] （0-indexed）。例如， [0,1,2,4,5,6,7] 可能會在樞軸索引 3 處旋轉並變為 [4,5,6,7,0,1,2] 。
+
+Given the array nums after the possible rotation and an integer target, return the index of target if it is in nums, or -1 if it is not in nums.
+給定可能旋轉后的陣列 nums 和一個整數 target ， target 如果它在 nums 中，或者 -1 如果它不在 nums 中，則返回的索引。
+
+You must write an algorithm with O(log n) runtime complexity.
+您必須編寫具有 O(log n) 運行時複雜性的演算法。
+
+------------------------------------------
+class Solution {
+    public int search(int[] nums, int target) {
+        int value=-1;
+        for(int i=0 ;i<nums.length;i++){
+            if(nums[i]==target){
+                value=i;
+                break;
+            }
+        }
+        return value;
+    }
+}
