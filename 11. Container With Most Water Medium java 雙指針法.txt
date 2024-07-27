@@ -1,0 +1,71 @@
+11. Container With Most Water
+11. 裝有最多水的容器
+You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
+你得到一個長度 n 為的整數數位。 height 繪製了 n 垂直線，使 ith 得線的兩個端點是 (i, 0) 和 (i, height[i]) 。
+
+Find two lines that together with the x-axis form a container, such that the container contains the most water.
+找到兩條線，它們與 x 軸一起構成一個容器，使容器包含最多的水。
+
+Return the maximum amount of water a container can store.
+返回容器可以儲存的最大水量。
+
+Notice that you may not slant the container.
+請注意，您不能傾斜容器。
+--------------------------------------------------------------------------
+當然，這裡是將上述解決方案翻譯成中文的版本：
+
+```java
+class Solution {
+    public int maxArea(int[] height) {
+        // 初始化兩個指針
+        int left = 0;
+        int right = height.length - 1;
+        int maxArea = 0;
+        
+        // 當兩個指針未相遇時進行迭代
+        while (left < right) {
+            // 計算當前的面積
+            int width = right - left;
+            int minHeight = Math.min(height[left], height[right]);
+            int currentArea = width * minHeight;
+            
+            // 更新目前找到的最大面積
+            maxArea = Math.max(maxArea, currentArea);
+            
+            // 移動指向較短邊的指針，以尋找可能更大的面積
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        
+        return maxArea;
+    }
+}
+```
+
+### 解釋
+
+1. **初始化**：
+   - 初始化兩個指針，`left` 指向數組的開始位置，`right` 指向數組的結束位置。
+
+2. **指針未相遇時循環**：
+   - 當 `left` 小於 `right` 時，繼續循環。
+
+3. **計算面積**：
+   - 計算當前兩條線之間的寬度，即 `right - left`。
+   - 取這兩條線中較短的那條的高度，即 `Math.min(height[left], height[right])`。
+   - 當前的面積是 `width * minHeight`。
+
+4. **更新最大面積**：
+   - 如果當前的面積大於已找到的最大面積，則更新 `maxArea`。
+
+5. **移動指針**：
+   - 將指向較短線的指針向另一個指針移動，以尋找可能的更大面積。
+
+這種雙指針的方法時間複雜度為 \(O(n)\)，空間複雜度為 \(O(1)\)，對於這個問題來說非常高效。
+        
+    
+
+
