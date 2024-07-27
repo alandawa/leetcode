@@ -1,0 +1,158 @@
+143. Reorder List 
+143. 重新訂購清單
+
+You are given the head of a singly linked-list. The list can be represented as:
+您將獲得一個單獨連結清單的頭部。該清單可以表示為：
+
+L0 → L1 → … → Ln - 1 → Ln
+Reorder the list to be on the following form:
+將清單重新排序為以下表單：
+
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+You may not modify the values in the list's nodes. Only nodes themselves may be changed.
+您不能修改清單節點中的值。只有節點本身可以更改。
+*-------------------------------------------------------------
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) {
+            return;
+        }
+        
+        // 1. 找到中間節點
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        // 2. 反轉後半部分的鏈表
+        ListNode second = slow.next;
+        slow.next = null;  // 將前半部分結束
+        second = reverse(second);
+        
+        // 3. 合併兩部分
+        ListNode first = head;
+        while (second != null) {
+            ListNode temp1 = first.next;
+            ListNode temp2 = second.next;
+            
+            first.next = second;
+            second.next = temp1;
+            
+            first = temp1;
+            second = temp2;
+        }
+    }
+    
+    // 反轉鏈表
+    private ListNode reverse(ListNode head) {
+        ListNode prev = null;
+        ListNode curr = head;
+        while (curr != null) {
+            ListNode next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+}
+-------------------------------------------------------------------------------------------
+要將一個單鏈表進行重新排序，我們可以採取以下步驟，這裡會先將步驟繁體中文解釋一遍：
+
+1. **找到鏈表的中間點**：
+   使用快慢指針法（兩個指針，其中一個每次移動兩步，另一個每次移動一步），來找到鏈表的中間點。這樣可以將鏈表分成兩個部分。
+
+2. **反轉後半部分的鏈表**：
+   反轉中間點之後的鏈表。這是因為我們需要將後半部分的節點按倒序排列。
+
+3. **合併兩個部分**：
+   交替合併前半部分和反轉後半部分的節點。
+
+以下是具體的實現步驟：
+
+1. **找到鏈表的中間點**：
+   使用 `slow` 和 `fast` 指針。`slow` 每次移動一步，`fast` 每次移動兩步。當 `fast` 指針到達鏈表末尾時，`slow` 指針正好在中間。
+
+2. **反轉後半部分鏈表**：
+   從中間點開始，將後半部分的鏈表進行反轉。
+
+3. **合併兩部分鏈表**：
+   使用兩個指針，一個指向前半部分的開始，另一個指向反轉後的後半部分。交替合併兩部分的節點。
+
+以下是用 Java 實現的代碼：
+
+```java
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) {
+            return;
+        }
+        
+        // 1. 找到中間節點
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        // 2. 反轉後半部分的鏈表
+        ListNode second = slow.next;
+        slow.next = null;  // 將前半部分結束
+        second = reverse(second);
+        
+        // 3. 合併兩部分
+        ListNode first = head;
+        while (second != null) {
+            ListNode temp1 = first.next;
+            ListNode temp2 = second.next;
+            
+            first.next = second;
+            second.next = temp1;
+            
+            first = temp1;
+            second = temp2;
+        }
+    }
+    
+    // 反轉鏈表
+    private ListNode reverse(ListNode head) {
+        ListNode prev = null;
+        ListNode curr = head;
+        while (curr != null) {
+            ListNode next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+}
+```
+
+### 繁體中文解釋：
+
+1. **找到中間節點**：
+   - 使用 `slow` 和 `fast` 兩個指針來遍歷鏈表。`slow` 指針每次移動一步，`fast` 指針每次移動兩步。當 `fast` 指針到達鏈表末尾時，`slow` 指針指向鏈表的中間節點。
+
+2. **反轉後半部分的鏈表**：
+   - 從中間節點的下一個節點開始，進行鏈表反轉，直到鏈表結尾。
+
+3. **合併兩部分鏈表**：
+   - 使用兩個指針，一個從鏈表頭部開始（前半部分），另一個從反轉後的後半部分開始。交替將兩個指針指向的節點合併到一起，直到後半部分的節點合併完畢。
+
+這樣的實現能夠在 \(O(n)\) 的時間複雜度和 \(O(1)\) 的額外空間複雜度下完成鏈表的重新排序。
+
