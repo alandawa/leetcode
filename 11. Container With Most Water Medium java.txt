@@ -1,0 +1,67 @@
+11. Container With Most Water
+11. 裝有最多水的容器
+You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
+你得到一個長度 n 為的整數數位。 height 繪製了 n 垂直線，使 ith 得線的兩個端點是 (i, 0) 和 (i, height[i]) 。
+
+Find two lines that together with the x-axis form a container, such that the container contains the most water.
+找到兩條線，它們與 x 軸一起構成一個容器，使容器包含最多的水。
+
+Return the maximum amount of water a container can store.
+返回容器可以儲存的最大水量。
+
+Notice that you may not slant the container.
+請注意，您不能傾斜容器。
+--------------------------------------------------------------------------
+import java.util.Arrays;
+
+class Solution {
+    public int maxArea(int[] height) {
+        int max1=0;
+        int max2=0;
+        int maxArea=0;
+        int[] copyheight=height.clone();
+        Arrays.sort(copyheight);
+        int minheight=copyheight[0];
+        int maxheight=copyheight[copyheight.length-1];
+
+        for(int i=minheight;i<=maxheight;i++){
+                int record1=0;
+                int record2=0;
+                int recordheight1=0;
+                int recordheight2=0;
+                int area=0;
+            for(int j=0;j<height.length;j++){
+                if(height[j]>=i){
+                    record1=j;
+                    recordheight1=height[j];
+                    break; 
+                }
+            }
+            for(int j=height.length-1;j>=0;j--){
+                if(height[j]>=i){
+                    record2=j;
+                    recordheight2=height[j];
+                    break; 
+                }
+            }
+            area=(record2-record1)*Math.min(recordheight1,recordheight2);
+                if(record2-record1<=0){
+                    break;
+                }else  if (area>maxArea){
+                    maxArea=area;
+                }
+
+
+        }
+
+       return      maxArea;
+    }
+
+
+}
+
+
+        
+    
+
+
