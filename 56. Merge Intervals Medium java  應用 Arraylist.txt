@@ -1,0 +1,84 @@
+当然，这里是中文解释：
+
+### 题目
+
+给定一个区间数组，其中 `intervals[i] = [starti, endi]`，需要合并所有重叠的区间，并返回一个覆盖输入中所有区间的非重叠区间数组。
+
+### 解题思路
+
+要解决这个问题，我们可以遵循以下步骤：
+
+1. **排序区间**：首先根据区间的起始值对区间进行排序。这样可以方便地合并重叠的区间。
+
+2. **合并区间**：遍历排序后的区间列表，将重叠的区间合并。
+
+### 详细步骤
+
+1. **排序区间**：
+   - 使用数组的起始值对区间进行排序。如果两个区间的起始值相同，Java 的默认排序行为会根据结束值进行排序。
+
+2. **合并区间**：
+   - 初始化一个列表来存储合并后的区间。
+   - 遍历排序后的区间列表，对于每一个区间，检查它是否与合并列表中的最后一个区间重叠。
+   - 如果重叠，则合并它们（即更新最后一个区间的结束值）。
+   - 如果不重叠，则将当前区间添加到合并列表中。
+
+### 代码实现
+
+以下是 Java 代码实现：
+
+```java
+import java.util.*;
+
+public class Solution {
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length == 0) return new int[0][0];
+        
+        // 根据起始值对区间进行排序
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        
+        // 初始化一个列表来存储合并后的区间
+        List<int[]> merged = new ArrayList<>();
+        
+        // 从第一个区间开始
+        int[] currentInterval = intervals[0];
+        merged.add(currentInterval);
+        
+        // 遍历区间
+        for (int i = 1; i < intervals.length; i++) {
+            int[] interval = intervals[i];
+            
+            // 如果当前区间与合并列表中的最后一个区间重叠
+            if (interval[0] <= currentInterval[1]) {
+                // 通过更新结束值来合并它们
+                currentInterval[1] = Math.max(currentInterval[1], interval[1]);
+            } else {
+                // 否则，将新区间添加到合并列表中
+                currentInterval = interval;
+                merged.add(currentInterval);
+            }
+        }
+        
+        // 将列表转换为二维数组
+        return merged.toArray(new int[merged.size()][]);
+    }
+}
+```
+
+### 代码解释
+
+1. **排序**：使用 `Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));` 根据区间的起始值进行排序。
+
+2. **合并**：
+   - 从第一个区间开始，添加到 `merged` 列表中。
+   - 遍历其余的区间。如果当前区间与 `merged` 列表中的最后一个区间重叠（即当前区间的起始值小于或等于最后一个区间的结束值），则合并这两个区间（更新结束值）。
+   - 如果不重叠，将当前区间直接添加到 `merged` 列表中。
+
+3. **转换列表为数组**：使用 `merged.toArray(new int[merged.size()][])` 将合并后的列表转换为二维数组形式返回。
+
+### 时间复杂度
+
+- **排序**：`O(n \log n)`，其中 `n` 是区间的数量。
+- **合并**：`O(n)`，遍历所有区间。
+
+总的时间复杂度是 `O(n \log n)`，这是处理大量区间时非常高效的算法。
