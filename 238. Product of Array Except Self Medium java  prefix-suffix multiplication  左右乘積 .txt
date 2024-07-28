@@ -1,0 +1,126 @@
+238. Product of Array Except Self
+238. 除自身外的陣列的乘積
+
+Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i].
+給定一個整數陣列 nums，返回一個陣列 answer，使得 answer[i] 等於除 nums[i] 之外的所有 nums 元素的乘積。
+
+The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.
+nums 的任何前綴或後綴的乘積都保證適合 32 位整數。
+
+You must write an algorithm that runs in O(n) time and without using the division operation.
+您必須編寫一個在 O（n） 時間內運行且不使用除法運算的演算法。
+------------------------------------------------------------------------
+import java.util.Arrays;
+
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int n=nums.length;
+        int[] dp =new int[n];
+        Arrays.fill(dp, 1);
+
+        for (int j = 1; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                dp[i]*=nums[(i+j)%n];
+            }
+        }
+
+
+        return dp;
+    }
+}
+O(n^2)
+--------------------------------------------------
+
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] result = new int[n];
+        
+        // 步驟 1: 計算每個位置左邊的乘積
+        result[0] = 1;  // 第一個位置左邊沒有元素，設為 1
+        for (int i = 1; i < n; i++) {
+            result[i] = result[i - 1] * nums[i - 1];
+        }
+        
+        // 步驟 2: 計算每個位置右邊的乘積並合併到結果中
+        int rightProduct = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            result[i] *= rightProduct;
+            rightProduct *= nums[i];
+        }
+        
+        return result;
+    }
+}
+O(2n)
+-------------------------------------
+在計算「左右乘積」的問題中，我們需要確保每個元素的結果等於該元素左邊所有元素的乘積乘以該元素右邊所有元素的乘積。我們將這個問題分解成兩部分：計算每個元素左邊的所有元素的乘積，然後計算每個元素右邊的所有元素的乘積。最終，我們將這兩部分的結果結合來得到答案。
+
+### 具體示例
+
+假設我們有數組 `nums`，長度 \( N = 7 \)，數組為：
+
+\[ \text{nums} = [2, 3, 4, 5, 6, 7, 8] \]
+
+我們要計算一個新數組 `result`，其中 `result[i]` 是 `nums` 中除了 `nums[i]` 以外所有數字的乘積。
+
+### 步驟分解
+
+1. **計算每個位置左邊的乘積**（左邊乘積）：
+   - 使用一個數組 `result` 來保存左邊乘積。
+   - 初始化 `result[0]` 為 1（因為第一個位置左邊沒有元素）。
+   - 然後，對於每個位置 \( i \)，`result[i]` 是 `result[i-1]` 乘以 `nums[i-1]`。
+
+2. **計算每個位置右邊的乘積**（右邊乘積）：
+   - 使用一個變數 `rightProduct` 來保存右邊的乘積，初始化為 1。
+   - 從數組的右端開始遍歷，對於每個位置 \( i \)，將 `result[i]` 乘以 `rightProduct`，然後更新 `rightProduct` 為 `rightProduct` 乘以 `nums[i]`。
+
+### 詳細示例
+
+讓我們用表格來展示這個過程。
+
+#### 初始狀態
+
+- `nums`：[2, 3, 4, 5, 6, 7, 8]
+- `result`：[1, 1, 1, 1, 1, 1, 1]（初始化為 1）
+
+#### 計算左邊乘積
+
+| 索引 \( i \) | `nums[i]` | 左邊乘積 `result[i]` | 計算步驟                      |
+|-------------|-----------|----------------------|-------------------------------|
+| 0           | 2         | 1                    | 初始化為 1                    |
+| 1           | 3         | 2                    | `result[1] = result[0] * nums[0] = 1 * 2`  |
+| 2           | 4         | 6                    | `result[2] = result[1] * nums[1] = 2 * 3`  |
+| 3           | 5         | 24                   | `result[3] = result[2] * nums[2] = 6 * 4`  |
+| 4           | 6         | 120                  | `result[4] = result[3] * nums[3] = 24 * 5` |
+| 5           | 7         | 720                  | `result[5] = result[4] * nums[4] = 120 * 6`|
+| 6           | 8         | 5040                 | `result[6] = result[5] * nums[5] = 720 * 7`|
+
+此時，`result` 變為左邊乘積的結果：
+
+\[ \text{Left Products} = [1, 2, 6, 24, 120, 720, 5040] \]
+
+#### 計算右邊乘積並合併
+
+| 索引 \( i \) | `nums[i]` | 左邊乘積 `result[i]` | 右邊乘積 `rightProduct` | 更新後 `result[i]`         | 計算步驟                                    |
+|-------------|-----------|----------------------|-------------------------|-----------------------------|---------------------------------------------|
+| 6           | 8         | 5040                | 1                       | 5040                        | `result[6] *= rightProduct; rightProduct *= nums[6]` |
+| 5           | 7         | 5040                | 8                       | 5040 * 8 = 40320           | `result[5] *= rightProduct; rightProduct *= nums[5]` |
+| 4           | 6         | 120                 | 56                      | 120 * 56 = 6720            | `result[4] *= rightProduct; rightProduct *= nums[4]` |
+| 3           | 5         | 24                  | 336                     | 24 * 336 = 8064            | `result[3] *= rightProduct; rightProduct *= nums[3]` |
+| 2           | 4         | 6                   | 1680                    | 6 * 1680 = 10080           | `result[2] *= rightProduct; rightProduct *= nums[2]` |
+| 1           | 3         | 2                   | 6720                    | 2 * 6720 = 13440           | `result[1] *= rightProduct; rightProduct *= nums[1]` |
+| 0           | 2         | 1                   | 20160                   | 1 * 20160 = 20160          | `result[0] *= rightProduct; rightProduct *= nums[0]` |
+
+#### 最終結果
+
+- `result` 陣列的每個位置值即為該位置上除自身以外的所有元素的乘積：
+
+\[ \text{result} = [20160, 13440, 10080, 8064, 6720, 40320, 5040] \]
+
+### 總結
+
+- **左邊乘積**：記錄了每個位置左邊所有元素的乘積。
+- **右邊乘積**：記錄了每個位置右邊所有元素的乘積，並與左邊乘積合併以獲得最終結果。
+
+這種方法使得整個過程的時間複雜度是 O(n)，且不需要額外的空間（除了結果數組外），符合題目的要求。
