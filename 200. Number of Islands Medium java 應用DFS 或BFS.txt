@@ -1,0 +1,170 @@
+
+200. Number of Islands 
+200. 島嶼數量
+
+Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
+給定一個 m x n 2D 二元格網，表示 '1's（陸地）和 '0's（水）的地圖，返回島嶼的數量。
+
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+島嶼四面環水，由水準或垂直連接相鄰土地而形成。您可能會認為網格的所有四個邊都被水包圍。
+
+
+
+--------------------------------------------------------------------------
+當你面對這個問題時，你需要找出一個二維網格（grid）中有多少個島嶼。這個網格由 '1'（表示陸地）和 '0'（表示水）組成。島嶼是由連接在一起的 '1'（陸地）組成的區域，連接的方式可以是水平或垂直的。
+
+### 解決方案
+
+要解決這個問題，你可以使用深度優先搜尋（DFS）或廣度優先搜尋（BFS）來遍歷每個島嶼並標記它們。這裡的解法使用 DFS 來解決問題。以下是具體的實現步驟：
+
+1. 遍歷整個網格，對於每個 '1'（陸地）：
+   - 認定這是一個新的島嶼，並使用 DFS 來遍歷並標記整個島嶼。
+   - 在 DFS 遍歷過程中，將島嶼的所有 '1' 標記為 '0'（水），以防止重複計數。
+
+2. 計數每次發現新的 '1' 並開始 DFS 的次數，這個數字就是島嶼的數量。
+
+### 代碼實現
+
+```java
+class Solution {
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0) return 0;
+        
+        int rows = grid.length;
+        int cols = grid[0].length;
+        int numIslands = 0;
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] == '1') {
+                    numIslands++;
+                    dfs(grid, r, c);
+                }
+            }
+        }
+        
+        return numIslands;
+    }
+
+    private void dfs(char[][] grid, int r, int c) {
+        // If out of bounds or at water, return
+        if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] == '0') {
+            return;
+        }
+        
+        // Mark this cell as visited by setting it to '0'
+        grid[r][c] = '0';
+        
+        // Visit all adjacent cells (up, down, left, right)
+        dfs(grid, r - 1, c); // up
+        dfs(grid, r + 1, c); // down
+        dfs(grid, r, c - 1); // left
+        dfs(grid, r, c + 1); // right
+    }
+}
+```
+
+### 繁體中文解釋
+
+1. **遍歷網格**：
+   - 檢查每個位置，如果遇到 '1'，這表明找到了一個新的島嶼。每當發現一個新的 '1'，就增加島嶼計數器的數量。
+
+2. **深度優先搜尋 (DFS)**：
+   - 從當前的 '1' 開始，使用 DFS 遍歷所有連接的 '1'，並把這些 '1' 標記為 '0'，避免在以後的搜尋中重複計數。
+
+3. **邊界檢查**：
+   - 在 DFS 過程中，確保不越界且只處理陸地 '1'，並標記為水 '0'。
+
+這樣可以確保正確計數每個島嶼的數量，並有效地解決這個問題。
+
+當使用廣度優先搜尋（BFS）來解決計算島嶼數量的問題時，你可以通過使用隊列來遍歷每個島嶼的所有相鄰陸地。以下是如何使用 BFS 解決這個問題的步驟：
+
+### BFS 解決方案
+
+1. **初始化**：
+   - 創建一個隊列來存儲需要探索的陸地位置。
+   - 遍歷整個網格，對於每個 '1'（陸地）：
+     - 如果發現 '1'，則將其視為一個新的島嶼，並將這個位置添加到隊列中。
+     - 使用 BFS 將這個位置的所有相連的 '1'（即整個島嶼）遍歷並標記為 '0'（水）。
+
+2. **BFS 遍歷**：
+   - 從隊列中取出一個位置，將這個位置標記為已訪問。
+   - 將這個位置的相鄰位置（上、下、左、右）加入隊列中，只要這些位置仍然是 '1' 且在網格內。
+
+3. **計數**：
+   - 每次發現新的 '1' 並開始 BFS 遍歷時，增加島嶼計數器的數量。
+
+### 代碼實現
+
+以下是使用 BFS 的 Java 代碼：
+
+```java
+import java.util.LinkedList;
+import java.util.Queue;
+
+class Solution {
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0) return 0;
+        
+        int rows = grid.length;
+        int cols = grid[0].length;
+        int numIslands = 0;
+        boolean[][] visited = new boolean[rows][cols];
+        
+        // 四個方向的移動（上、下、左、右）
+        int[] dRow = {-1, 1, 0, 0};
+        int[] dCol = {0, 0, -1, 1};
+        
+        // 遍歷整個網格
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] == '1' && !visited[r][c]) {
+                    numIslands++;
+                    bfs(grid, r, c, visited, dRow, dCol);
+                }
+            }
+        }
+        
+        return numIslands;
+    }
+
+    private void bfs(char[][] grid, int startRow, int startCol, boolean[][] visited, int[] dRow, int[] dCol) {
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[] {startRow, startCol});
+        visited[startRow][startCol] = true;
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int row = current[0];
+            int col = current[1];
+
+            // 遍歷四個方向
+            for (int i = 0; i < 4; i++) {
+                int newRow = row + dRow[i];
+                int newCol = col + dCol[i];
+
+                // 檢查新位置是否合法
+                if (newRow >= 0 && newRow < grid.length && newCol >= 0 && newCol < grid[0].length &&
+                    grid[newRow][newCol] == '1' && !visited[newRow][newCol]) {
+                    queue.add(new int[] {newRow, newCol});
+                    visited[newRow][newCol] = true;
+                }
+            }
+        }
+    }
+}
+```
+
+### 繁體中文解釋
+
+1. **初始化**：
+   - 使用 `Queue`（隊列）來幫助 BFS 遍歷。
+   - 遍歷整個網格，如果找到 '1'，就開始 BFS 搜索，並將這個位置的所有連接的 '1' 標記為 '0'。
+
+2. **BFS 遍歷**：
+   - 從隊列中取出當前位置，將它的所有相鄰位置（上、下、左、右）添加到隊列中，只要這些位置仍然是 '1' 且在網格範圍內，並且未被訪問過。
+
+3. **計數**：
+   - 每次發現新的 '1' 開始 BFS 搜索時，增加島嶼計數器的數量。
+
+使用 BFS 可以有效地遍歷每個島嶼並標記它們，這樣可以準確地計算出網格中島嶼的數量。
