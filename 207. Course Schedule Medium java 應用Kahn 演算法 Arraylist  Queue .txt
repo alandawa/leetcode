@@ -1,0 +1,105 @@
+207. Course Schedule 207. 課程安排
+
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+您必須參加的總共 numCourses 課程，標記為從 0 到 numCourses - 1。您將獲得一個陣列 prerequisites，其中 prerequisites[i] = [ai， bi] 表示如果您想學習課程 ai，則必須先學習課程 bi。
+
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+例如，對 [0， 1] 表示要選修課程 0，您必須先選修課程 1。
+Return true if you can finish all courses. Otherwise, return false.
+如果可以完成所有課程，則返回 true。否則，返回 false。
+-----------------------------------------------------------------
+要解決這個問題，我們可以使用圖論中的拓撲排序。這個問題本質上是一個檢查有向圖是否有環的問題。如果圖中沒有環，那麼就可以完成所有的課程。相反，如果圖中有環，那麼就不能完成所有的課程。
+
+### 關鍵概念：
+
+1. **拓撲排序 (Topological Sort)**：
+   - 拓撲排序是對有向無環圖（DAG）的一種線性排序，使得對於每一條有向邊 (u, v)，節點 u 在節點 v 之前出現。
+   - 如果圖中有環，則無法進行拓撲排序。
+
+2. **Kahn 演算法**：
+   - 用於拓撲排序的演算法之一，基於入度（每個節點的進入邊數）來實現。
+   - 當圖中有環時，無法將所有節點加入排序中，這是因為會有一些節點的入度始終不為零。
+
+### 解決步驟：
+
+1. **構建圖和入度數組**：
+   - 建立一個圖的表示，通常使用鄰接表（即每個節點有一個鏈表來記錄所有指向它的邊）。
+   - 建立一個入度數組，記錄每個節點的入度數量。
+
+2. **初始化隊列**：
+   - 將所有入度為零的節點加入隊列。
+
+3. **執行拓撲排序**：
+   - 從隊列中取出節點，將它加入拓撲排序結果中。
+   - 更新其鄰接節點的入度，如果鄰接節點的入度變為零，將其加入隊列。
+
+4. **檢查結果**：
+   - 如果拓撲排序的結果中包含所有節點，則圖中無環，返回 `true`。
+   - 如果拓撲排序的結果中未包含所有節點，則圖中有環，返回 `false`。
+
+### 實現代碼：
+
+以下是 Java 實現 Kahn 演算法來解決這個問題的代碼：
+
+```java
+import java.util.*;
+
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        // Step 1: Build the graph and in-degree array
+        List<List<Integer>> graph = new ArrayList<>();
+        int[] inDegree = new int[numCourses];
+        
+        for (int i = 0; i < numCourses; i++) {
+            graph.add(new ArrayList<>());
+        }
+        
+        for (int[] prerequisite : prerequisites) {
+            int course = prerequisite[0];
+            int preCourse = prerequisite[1];
+            graph.get(preCourse).add(course);
+            inDegree[course]++;
+        }
+        
+        // Step 2: Initialize the queue with nodes with zero in-degree
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        
+        // Step 3: Process nodes
+        int count = 0;
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            count++;
+            
+            for (int neighbor : graph.get(node)) {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0) {
+                    queue.offer(neighbor);
+                }
+            }
+        }
+        
+        // Step 4: Check if all nodes were processed
+        return count == numCourses;
+    }
+}
+```
+
+### 簡單解釋：
+
+1. **圖的構建**：
+   - 根據 `prerequisites` 構建鄰接表。
+   - 更新每個節點的入度。
+
+2. **拓撲排序**：
+   - 利用入度為零的節點初始化隊列。
+   - 持續從隊列中取出節點並更新其鄰接節點的入度。
+   - 如果某個鄰接節點的入度變為零，將其加入隊列。
+
+3. **結果判斷**：
+   - 如果所有節點都被處理過，則沒有環，返回 `true`。
+   - 否則，返回 `false`。
