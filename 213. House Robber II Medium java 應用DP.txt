@@ -1,0 +1,117 @@
+213. House Robber II 
+213. 入室搶劫2
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the police if two adjacent houses were broken into on the same night.
+你是一個職業劫匪，計劃搶劫沿街的房屋。每所房子都藏有一定數量的錢。這個地方的所有房子都排列成一個圓圈。這意味著第一所房子是最後一棟房子的鄰居。同時，相鄰的房屋連接了安全系統，如果同一天晚上有兩棟相鄰房屋被闖入，它會自動聯繫警方。
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+給定一個整數陣列 nums 表示每棟房子的金額，返回您今晚可以在不報警的情況下搶劫的最大金額。
+------------------------------------------------------------
+試寫 wrong answer
+
+class Solution {
+    public int rob(int[] nums) {
+        int n = nums.length;
+
+        // 如果只有一間房子
+        if (n == 1) return nums[0];
+        
+        // 當有兩間房子
+        if (n == 2) return Math.max(nums[0], nums[1]);
+
+        
+        // 初始化 DP 陣列
+        int[] dp = new int[n];
+        dp[0] = Math.max(nums[n-1],nums[0] );
+        dp[1] = Math.max(dp[0],Math.max(nums[0],nums[1]) );
+        
+        // 填充 DP 陣列
+        for (int i = 2; i < n; i++) {
+            dp[i] = Math.max(dp[i-1], dp[i-2] + nums[i]);
+        }
+
+        
+        // 返回最大值
+        return dp[n-2];
+    }
+}
+---------------------------------------------------------------------------
+您的 `rob` 函數旨在解決「打家劫舍」問題，但目前的代碼有一些錯誤和邏輯問題。這個問題的關鍵是要考慮到環狀排列的房子，並且在計算最大獲利時需要考慮兩種情況：
+
+1. **不偷竊第一間房子**，而偷竊其他房子。
+2. **偷竊第一間房子**，但不偷竊最後一間房子。
+
+根據這兩種情況，我們可以使用動態規劃來分別計算這兩種情況下的最大收益，並返回其中的最大值。
+
+以下是經過修正的 Java 代碼：
+
+```java
+class Solution {
+    public int rob(int[] nums) {
+        int n = nums.length;
+
+        // 如果只有一間房子
+        if (n == 1) return nums[0];
+        
+        // 當有兩間房子
+        if (n == 2) return Math.max(nums[0], nums[1]);
+
+        // 計算不偷竊第一間房子的情況
+        int[] dp1 = new int[n-1];
+        dp1[0] = nums[1];
+        dp1[1] = Math.max(nums[1], nums[2]);
+        for (int i = 2; i < n-1; i++) {
+            dp1[i] = Math.max(dp1[i-1], dp1[i-2] + nums[i+1]);
+        }
+        
+        // 計算偷竊第一間房子的情況
+        int[] dp2 = new int[n];
+        dp2[0] = nums[0];
+        dp2[1] = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < n-1; i++) {
+            dp2[i] = Math.max(dp2[i-1], dp2[i-2] + nums[i]);
+        }
+
+        // 返回兩種情況的最大值
+        return Math.max(dp1[n-2], dp2[n-2]);
+    }
+}
+```
+
+### 說明
+
+1. **處理環狀排列的情況**：
+   - `dp1` 用來計算從第二間房子到倒數第二間房子的最大收益。這樣可以避免考慮偷竊第一間房子的情況。
+   - `dp2` 用來計算從第一間房子到倒數第二間房子的最大收益。這樣可以避免考慮偷竊最後一間房子的情況。
+
+2. **動態規劃表 `dp1` 和 `dp2` 的填充**：
+   - `dp1` 和 `dp2` 的填充方式相似，都是利用動態規劃的方式，計算最大收益。
+
+3. **返回最大收益**：
+   - 比較 `dp1` 和 `dp2` 的結果，返回其中的最大值。
+
+這樣修改後的代碼應該能正確處理所有的情況。希望這樣的解答對您有幫助！
+---------------------------------------------------------------------------
+我推斷您需要處理環狀排列的房子的原因是：
+
+1. **典型問題背景**：在「打家劫舍」問題中，房子通常排列成環狀，即第一間和最後一間房子是相鄰的。這使得問題比普通的一維排列更複雜。
+
+2. **代碼分析**：您的原始代碼中存在一些不符常見解法的邏輯。例如，您計算了 `dp[n-2]`，這表明您可能考慮了不包括最後一間房子的情況，但沒有考慮到包括或不包括第一間房子的情況。
+
+3. **常見錯誤**：在這類問題中，一個常見的錯誤是只處理一維排列，而忽略了環狀排列的影響。這會導致錯誤的結果。
+
+### 解決方案的正確性
+
+1. **處理環狀排列**：
+   - 當房子排列成環狀時，如果偷竊了第一間房子，就不能偷竊最後一間房子，反之亦然。因此，您需要處理兩種情況，分別是：
+     - 不偷竊第一間房子
+     - 偷竊第一間房子但不偷竊最後一間房子
+
+2. **動態規劃**：
+   - 對於不包含第一間房子的情況，計算從第二間房子到倒數第二間房子的最大收益。
+   - 對於包含第一間房子的情況，計算從第一間房子到倒數第二間房子的最大收益。
+
+3. **最終結果**：
+   - 比較兩種情況下的最大收益，取最大值作為結果。
+
+這是一個解決環狀排列問題的常見方法，也是最有效的方式。如果您確信問題不涉及環狀排列，則可以簡化問題並使用一維動態規劃解決方案。不過，為了處理更廣泛的情況，考慮環狀排列通常是個好的選擇。
