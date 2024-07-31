@@ -1,0 +1,178 @@
+79. Word Search 
+79. 單詞搜索
+
+Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+給定一個 m x n 個字元板網格和一個字串單詞，如果網格中存在單詞，則返回 true。
+
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+該詞可以由順序相鄰的單元格的字母構成，其中相鄰單元格水準或垂直相鄰。同一字母儲存格不能多次使用。
+---------------------------------------------------------------
+Wrong Answer
+
+import java.util.Arrays;
+
+class Solution {
+    public boolean exist(char[][] board, String word) {
+        int m = board.length;
+        int n = board[0].length;
+        
+        // 将二维数组转换为 Character 数组
+        Character[] board2 = new Character[m * n];
+        Character[] charArray = word.chars().mapToObj(c -> (char) c).toArray(Character[]::new);
+        
+        int index = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                board2[index++] = board[i][j];
+            }
+        }
+        
+        // 排序
+        Arrays.sort(charArray);
+        Arrays.sort(board2);
+        
+        // 移除匹配的字符
+        for (int i = 0; i < charArray.length; i++) {
+            Character charl = charArray[i];
+            boolean found = false;
+            for (int j = 0; j < board2.length; j++) {
+                if (charl.equals(board2[j])) {
+                    board2[j] = null; // 用 null 替代已匹配的字符
+                    charArray[i] = null;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false; // 如果没有找到字符，则直接返回 false
+            }
+        }
+        
+        // 检查是否所有字符都已匹配
+        for (Character c : charArray) {
+            if (c != null) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
+
+Wrong Answer
+
+------------------------------------------------------------------------------
+
+你的代码中的错误源于简单字符匹配的方式，这种方式忽略了二维网格中字符的空间和路径限制。简单的字符排序匹配方法不能处理字符在网格中的具体位置和顺序要求。
+
+### 问题的关键点
+
+在你的网格例子中：
+
+```plaintext
+board =
+[["a","b"],
+ ["c","d"]]
+word = "abcd"
+```
+
+你的代码将 `board` 转换为一维数组，然后进行字符匹配。虽然你可能会得到正确的字符数量和匹配，但是这忽略了以下关键点：
+
+1. **字符的顺序**：
+   - 字符 `"abcd"` 必须按顺序匹配在网格中的路径，例如从 `a` 开始，依次到 `b`、`c`、`d`。字符顺序和路径必须考虑。
+
+2. **路径限制**：
+   - 在二维网格中，字符可以上下左右移动，而不能穿越或跳过字符。例如，从 `a` 可以到 `b`，但不能从 `a` 跳到 `d`，而要经过 `b` 和 `c`。
+
+3. **空间限制**：
+   - 字符必须在相邻的网格单元中找到。
+
+### 为什么简单字符排序匹配方法无法解决问题
+
+简单的排序方法和匹配方法（如将字符数组排序然后匹配）不会考虑字符的位置和顺序。这意味着虽然你可能可以在字符数组中找到所需的字符，但它们可能在不同的位置或不符合网格的空间要求。简单排序并不能保证字符在二维网格中的空间路径是有效的。
+
+### 正确的方法：深度优先搜索（DFS）
+
+正确的方法是使用深度优先搜索（DFS）来考虑字符的路径和位置。DFS 方法允许我们从每个可能的起点开始，并沿着可能的路径搜索目标字符串。以下是处理这种情况的正确方法的核心概念：
+
+1. **递归搜索**：
+   - 从网格中的每个字符开始递归地搜索目标字符串。
+
+2. **路径跟踪**：
+   - 确保搜索路径在网格中是连续的，并且字符顺序正确。
+
+3. **回溯**：
+   - 使用回溯来撤销字符的“访问”标记，确保其他路径可以使用相同的字符。
+
+### 示例代码解释
+
+```java
+class Solution {
+    public boolean exist(char[][] board, String word) {
+        if (board == null || board.length == 0 || board[0].length == 0 || word == null || word.length() == 0) {
+            return false;
+        }
+
+        int m = board.length;
+        int n = board[0].length;
+
+        // 遍历网格中的每一个点作为起点进行DFS搜索
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dfs(board, word, i, j, 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean dfs(char[][] board, String word, int i, int j, int index) {
+        // 检查是否超出边界或字符不匹配
+        if (i < 0 || i >= board.length || j < 0 || j >= board[0].length || board[i][j] != word.charAt(index)) {
+            return false;
+        }
+
+        // 检查是否匹配到最后一个字符
+        if (index == word.length() - 1) {
+            return true;
+        }
+
+        // 临时标记当前位置为已访问
+        char temp = board[i][j];
+        board[i][j] = '#'; // 用特殊字符标记已访问
+
+        // 进行四个方向的DFS搜索
+        boolean found = dfs(board, word, i + 1, j, index + 1) ||
+                        dfs(board, word, i - 1, j, index + 1) ||
+                        dfs(board, word, i, j + 1, index + 1) ||
+                        dfs(board, word, i, j - 1, index + 1);
+
+        // 恢复当前位置的字符
+        board[i][j] = temp;
+
+        return found;
+    }
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        char[][] board = {
+            {'a', 'b'},
+            {'c', 'd'}
+        };
+        String word = "abcd";
+        System.out.println(sol.exist(board, word)); // 输出: false
+    }
+}
+```
+
+### 总结
+
+- **简单字符匹配方法**：无法处理字符在网格中的顺序和路径限制，因此不能保证字符串在二维网格中的存在。
+- **DFS 方法**：通过考虑字符的具体路径和顺序，能够准确判断目标字符串是否可以在网格中找到。
+
+DFS 方法能够解决这个问题，因为它考虑了字符的空间位置和路径限制。
+
+
+
+
