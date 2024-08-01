@@ -1,0 +1,129 @@
+54. Spiral Matrix
+Given an m x n matrix, return all elements of the matrix in spiral order.
+-------------------------------------------------------
+Runtime Error   邊界定義不良
+import java.util.*;
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> lists=new ArrayList<>();
+        int m1 = 0;
+        int n1 = 0;
+        int mf = matrix.length;
+        int nf = matrix[0].length;
+        int remainder=mf*nf;
+        int i=0 , j=0;
+        Boolean R=true,L=false,T=false,B=false;
+
+
+        while(remainder>0){
+            remainder--;
+            lists.add(matrix[i][j]);
+            
+            if(R){
+                j++;
+                if(j==nf-1){
+                    j--;
+                    i++;
+                    m1++;
+                    R=false;B=true;
+                }
+            }else if(B){
+                i++;
+                if(i==mf-1){
+                    i--;
+                    j--;
+                    nf--;
+                    L=true;B=false;
+                }
+            }else if(L){
+                j--;
+                if(j==n1){
+                    j++;
+                    i--;
+                    nf--;
+                    L=false;T=true;
+                }
+            }else if(T){
+                i--;
+                if(i==n1){
+                    i++;
+                    j--;
+                    n1++;
+                    R=true;T=false;
+                }
+            }
+        }
+
+        return lists;
+        
+    }
+}
+---------------------------------------------
+
+你的 `spiralOrder` 方法基本上是正确的，它实现了顺时针螺旋遍历二维数组。以下是对你的代码的分析和一些改进建议，以便使其更加简洁和有效：
+
+1. **优化变量管理**：
+   - 你可以通过定义四个边界（`top`, `bottom`, `left`, `right`）来简化边界的管理，而不是用布尔变量来表示当前的遍历方向。
+
+2. **修复边界处理逻辑**：
+   - 你的代码在处理边界时可能会出现问题，因为有些边界的更新逻辑不够准确。
+
+以下是改进后的代码，使用了边界变量来管理螺旋遍历的方向，并且处理了边界更新的逻辑：
+
+```java
+import java.util.*;
+
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> result = new ArrayList<>();
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return result;
+        }
+
+        int top = 0, bottom = matrix.length - 1;
+        int left = 0, right = matrix[0].length - 1;
+
+        while (top <= bottom && left <= right) {
+            // Traverse from left to right
+            for (int j = left; j <= right; j++) {
+                result.add(matrix[top][j]);
+            }
+            top++; // Move down the top boundary
+
+            // Traverse from top to bottom
+            for (int i = top; i <= bottom; i++) {
+                result.add(matrix[i][right]);
+            }
+            right--; // Move left the right boundary
+
+            if (top <= bottom) {
+                // Traverse from right to left
+                for (int j = right; j >= left; j--) {
+                    result.add(matrix[bottom][j]);
+                }
+                bottom--; // Move up the bottom boundary
+            }
+
+            if (left <= right) {
+                // Traverse from bottom to top
+                for (int i = bottom; i >= top; i--) {
+                    result.add(matrix[i][left]);
+                }
+                left++; // Move right the left boundary
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+### 主要改进：
+
+1. **边界变量**：通过使用 `top`, `bottom`, `left`, 和 `right` 变量来表示矩阵的边界，可以更清晰地管理遍历的方向和边界的更新。
+
+2. **遍历顺序**：确保在遍历完成每一行或列后，适当更新边界，以防止重复遍历已经处理过的部分。
+
+3. **边界检查**：在进行左右遍历和上下遍历之前，检查相应的边界条件，确保不会超出有效范围。
+
+这些改进使得代码更加清晰且易于理解，也提高了效率。
