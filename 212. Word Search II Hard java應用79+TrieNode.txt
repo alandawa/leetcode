@@ -1,0 +1,255 @@
+212. Word Search II
+212. 單詞搜索II
+Given an m x n board of characters and a list of strings words, return all words on the board.
+給定一個 m x n 個字元板和一個字串單詞清單，返回板上的所有單詞。
+
+Each word must be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.
+每個單詞都必須由順序相鄰的儲存格的字母構成，其中相鄰儲存格水準或垂直相鄰。同一字母儲存格在一個單詞中不能多次使用。
+-------------------------------------------------------------------------------
+應用79  但是速度太慢
+import java.util.*;
+class Solution {
+    public List<String> findWords(char[][] board, String[] words) {
+        List<String> outList=new ArrayList<String>();
+        if (board == null || board.length == 0 || board[0].length == 0 || words == null ) {
+            return outList;
+        }
+       
+         // 遍历所有单词并检查它们是否存在于板上
+        for (String word : words) {
+            if (exist(board, word)) {
+                outList.add(word);
+            }
+        }
+        
+        return outList;
+    }
+
+    private boolean exist(char[][] board, String word) {
+        if (board == null || board.length == 0 || board[0].length == 0 || word == null || word.length() == 0) {
+            return false;
+        }
+
+        int m = board.length;
+        int n = board[0].length;
+
+        // 遍历网格中的每一个点作为起点进行DFS搜索
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dfs(board, word, i, j, 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean dfs(char[][] board, String word, int i, int j, int index) {
+        // 检查是否超出边界或字符不匹配
+        if (i < 0 || i >= board.length || j < 0 || j >= board[0].length || board[i][j] != word.charAt(index)) {
+            return false;
+        }
+
+        // 检查是否匹配到最后一个字符
+        if (index == word.length() - 1) {
+            return true;
+        }
+
+        // 临时标记当前位置为已访问
+        char temp = board[i][j];
+        board[i][j] = '#'; // 用特殊字符标记已访问
+
+        // 进行四个方向的DFS搜索
+        boolean found = dfs(board, word, i + 1, j, index + 1) ||
+                        dfs(board, word, i - 1, j, index + 1) ||
+                        dfs(board, word, i, j + 1, index + 1) ||
+                        dfs(board, word, i, j - 1, index + 1);
+
+        // 恢复当前位置的字符
+        board[i][j] = temp;
+
+        return found;
+    }
+
+}
+---------------------------------------------------------------------------------
+下面是修正後的程式碼，包括繁體註解和解釋，幫助你更好地理解每個部分的功能和作用：
+
+```java
+import java.util.*;
+
+class Solution {
+    private TrieNode root; // Trie 樹的根節點
+    private Set<String> result; // 用來儲存找到的單詞
+    private StringBuilder currentWord; // 用來動態構建當前的單詞
+
+    // TrieNode 類別定義
+    private static class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>(); // 存儲子節點
+        boolean isEndOfWord = false; // 判斷是否為單詞的結尾
+    }
+
+    // 主函數，查找給定單詞在棋盤中的存在情況
+    public List<String> findWords(char[][] board, String[] words) {
+        result = new HashSet<>(); // 初始化結果集
+        root = new TrieNode(); // 初始化 Trie 樹的根節點
+        currentWord = new StringBuilder(); // 初始化 StringBuilder 用來構建單詞
+
+        // 建立 Trie 樹
+        buildTrie(words);
+
+        int m = board.length; // 獲取棋盤的行數
+        int n = board[0].length; // 獲取棋盤的列數
+
+        // 遍歷棋盤中的每一個點，作為 DFS 搜索的起點
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                dfs(board, i, j, root); // 執行 DFS 搜索
+            }
+        }
+
+        return new ArrayList<>(result); // 將結果轉換為 List 並返回
+    }
+
+    // 建立 Trie 樹
+    private void buildTrie(String[] words) {
+        for (String word : words) {
+            TrieNode node = root; // 從根節點開始
+            for (char c : word.toCharArray()) { // 遍歷單詞中的每個字符
+                node = node.children.computeIfAbsent(c, k -> new TrieNode()); // 若子節點不存在，則創建新節點
+            }
+            node.isEndOfWord = true; // 標記此節點為單詞的結尾
+        }
+    }
+
+    // 使用 DFS 搜索單詞
+    private void dfs(char[][] board, int i, int j, TrieNode node) {
+        // 檢查是否超出邊界或字符不匹配
+        if (i < 0 || i >= board.length || j < 0 || j >= board[0].length || board[i][j] == '#') {
+            return; // 不合法的路徑，返回
+        }
+
+        char c = board[i][j]; // 獲取當前字符
+        if (!node.children.containsKey(c)) { // 若當前字符不在 Trie 的子節點中
+            return; // 返回
+        }
+
+        node = node.children.get(c); // 移動到 Trie 中對應的子節點
+        currentWord.append(c); // 將當前字符添加到當前單詞中
+
+        if (node.isEndOfWord) { // 若當前節點標記為單詞的結尾
+            result.add(currentWord.toString()); // 將單詞添加到結果集中
+            node.isEndOfWord = false; // 防止重複添加
+        }
+
+        // 臨時標記當前位置為已訪問
+        board[i][j] = '#';
+
+        // 進行四個方向的 DFS 搜索
+        dfs(board, i + 1, j, node); // 向下
+        dfs(board, i - 1, j, node); // 向上
+        dfs(board, i, j + 1, node); // 向右
+        dfs(board, i, j - 1, node); // 向左
+
+        // 恢復當前位置的字符
+        board[i][j] = c;
+        currentWord.deleteCharAt(currentWord.length() - 1); // 移除當前單詞中的最後一個字符
+    }
+}
+```
+
+### 主要部分解釋
+
+1. **Trie 樹的建立 (`buildTrie` 函數)**:
+   - 遍歷所有單詞，將每個單詞插入到 Trie 樹中。每個字符作為 Trie 的一個節點，最後一個字符的節點標記為單詞的結尾。
+
+2. **DFS 搜索 (`dfs` 函數)**:
+   - 從棋盤的每個起點開始，進行深度優先搜索。
+   - 通過檢查當前字符是否在 Trie 的子節點中來決定是否繼續搜索。
+   - 當找到完整單詞時，將其添加到結果集中，並標記 Trie 中對應的節點為已訪問，以防止重複添加。
+
+3. **`currentWord` 的管理**:
+   - `StringBuilder` 用於動態構建當前的單詞。在每次 DFS 遞歸結束後，刪除最後一個字符以回退到之前的狀態，確保在搜索其他方向時能夠正確地更新單詞。
+
+### 總結
+這種方法結合了 Trie 和 DFS，使得搜索過程更加高效，特別是在面對大量單詞和大規模棋盤時。通過合理使用 Trie 和避免重複計算，可以在較短時間內完成單詞查找。
+----------------------------------------------------------------------
+在 Java 中，一個類 (`class`) 內部可以包含其他類。這些類被稱為內部類（**Inner Class**）或嵌套類（**Nested Class**），具體分為以下幾種類型：
+
+### 1. 成員內部類（Member Inner Class）
+成員內部類是定義在另一個類的範圍內，並且與外部類有密切的關聯。它們可以直接訪問外部類的成員，包括私有成員。
+
+```java
+class OuterClass {
+    private String outerField = "Outer field";
+
+    class InnerClass {
+        void display() {
+            // 內部類可以直接訪問外部類的私有成員
+            System.out.println(outerField);
+        }
+    }
+}
+```
+
+### 2. 靜態嵌套類（Static Nested Class）
+靜態嵌套類是靜態的，它們不能訪問外部類的實例變量和方法。靜態嵌套類可以與外部類的靜態成員交互。
+
+```java
+class OuterClass {
+    private static String staticOuterField = "Static outer field";
+
+    static class StaticNestedClass {
+        void display() {
+            // 只能訪問外部類的靜態成員
+            System.out.println(staticOuterField);
+        }
+    }
+}
+```
+
+### 3. 局部內部類（Local Inner Class）
+局部內部類定義在方法內部，只在該方法內部可見。它們不能是靜態的，也不能訪問方法的局部變量，除非該變量是 `final` 或等效於 `final` 的。
+
+```java
+class OuterClass {
+    void outerMethod() {
+        final String localVariable = "Local variable";
+
+        class LocalInnerClass {
+            void display() {
+                // 可以訪問方法中的 final 局部變量
+                System.out.println(localVariable);
+            }
+        }
+
+        LocalInnerClass localInner = new LocalInnerClass();
+        localInner.display();
+    }
+}
+```
+
+### 4. 匿名內部類（Anonymous Inner Class）
+匿名內部類是一種特殊的內部類，它們沒有名字，通常用於簡單的用途，如事件處理器的實現等。
+
+```java
+abstract class AbstractClass {
+    abstract void display();
+}
+
+class OuterClass {
+    void createAnonymousClass() {
+        AbstractClass obj = new AbstractClass() {
+            @Override
+            void display() {
+                System.out.println("Anonymous inner class");
+            }
+        };
+
+        obj.display();
+    }
+}
+```
+
+### 總結
+在 Java 中，類可以包含其他類，這提供了靈活的組織和封裝方式。內部類可以幫助我們在不需要外部類實例的情況下，封裝一些邏輯，或者在特定的上下文中實現一些簡單的類型。
