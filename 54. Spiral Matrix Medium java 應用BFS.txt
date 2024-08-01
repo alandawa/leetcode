@@ -1,0 +1,75 @@
+54. Spiral Matrix
+Given an m x n matrix, return all elements of the matrix in spiral order.
+-------------------------------------------------------
+當然，以下是用 BFS 思路實現螺旋順序遍歷的 Java 代碼，並附上繁體中文註解：
+
+```java
+import java.util.*;
+
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> result = new ArrayList<>();
+        // 檢查矩陣是否為空
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return result; // 若矩陣為空，直接返回空列表
+        }
+
+        int rows = matrix.length; // 矩陣的行數
+        int cols = matrix[0].length; // 矩陣的列數
+        boolean[][] visited = new boolean[rows][cols]; // 用來標記每個位置是否已經訪問過
+        
+        // 方向向量，依次為右、下、左、上
+        int[] directionX = {0, 1, 0, -1}; 
+        int[] directionY = {1, 0, -1, 0}; 
+        
+        // 起始位置
+        int x = 0, y = 0;
+        int direction = 0; // 初始方向為右
+
+        // 總共要遍歷的元素數量
+        for (int i = 0; i < rows * cols; i++) {
+            result.add(matrix[x][y]); // 將當前位置的元素加入結果列表
+            visited[x][y] = true; // 標記當前位置為已訪問
+
+            // 計算下一個要訪問的位置
+            int nextX = x + directionX[direction];
+            int nextY = y + directionY[direction];
+            
+            // 若下一個位置越界或已經訪問過，則改變方向
+            if (nextX < 0 || nextX >= rows || nextY < 0 || nextY >= cols || visited[nextX][nextY]) {
+                direction = (direction + 1) % 4; // 改變方向，依次為右 -> 下 -> 左 -> 上
+                nextX = x + directionX[direction];
+                nextY = y + directionY[direction];
+            }
+            
+            // 更新當前位置
+            x = nextX;
+            y = nextY;
+        }
+
+        return result; // 返回結果列表
+    }
+}
+```
+
+### 繁體中文註解解析
+
+1. **初始化**：
+   - `result`：用來儲存按螺旋順序遍歷的結果。
+   - `visited`：布爾矩陣，用來標記每個位置是否已經被訪問過。
+
+2. **方向向量**：
+   - `directionX` 和 `directionY`：分別表示四個方向的移動量。對應的方向順序是右、下、左、上。
+
+3. **遍歷邏輯**：
+   - 從矩陣的起始位置 `(0, 0)` 開始，根據當前的方向移動。
+   - 若遇到邊界或已經訪問過的位置，則改變方向。
+   - `direction` 變量用來管理當前的移動方向，每次改變方向時會根據模 4 操作來更新。
+
+4. **方向管理**：
+   - 當前的移動方向是通過 `direction` 變量來控制的。方向會依次變為右、下、左、上，並重複這個順序。
+
+5. **位置更新**：
+   - 更新 `x` 和 `y` 變量以進行下一次遍歷。
+
+這個方法提供了一種不同於傳統邊界更新的方法來解決螺旋遍歷問題。雖然傳統的方法在實際使用中更為直接，但這個 BFS 風格的實現展示了如何利用方向變化來完成遍歷。
