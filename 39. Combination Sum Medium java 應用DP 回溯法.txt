@@ -1,0 +1,120 @@
+39. Combination Sum 
+39. 組合和
+
+Given an array of distinct integers candidates and a target integer target, return a list of all unique combinations of candidates where the chosen numbers sum to target. You may return the combinations in any order.
+給定一個不同整數候選項陣列和一個目標整數目標，返回所選數位與目標相和的所有唯一候選項組合的清單。您可以按任何順序返回組合。
+
+The same number may be chosen from candidates an unlimited number of times. Two combinations are unique if the
+從候選人中可以無限次選擇相同的號碼。如果
+frequency 頻率
+ of at least one of the chosen numbers is different.
+至少有一個選定的數位是不同的。
+
+The test cases are generated such that the number of unique combinations that sum up to target is less than 150 combinations for the given input.
+生成測試用例時，對於給定輸入，與目標相加的唯一組合數少於150個組合。
+---------------------------------------------
+回溯法（Backtracking）和动态规划（DP）各自有其优缺点。以下是对这两种方法在解决“组合总和”（Combination Sum）问题时的比较，包括时间复杂度、空间复杂度、实现复杂度以及其他相关因素。
+
+### 比较表格
+
+| 特性                 | 回溯法（Backtracking）                      | 动态规划（Dynamic Programming）              |
+|----------------------|---------------------------------------------|---------------------------------------------|
+| **时间复杂度**        | `O(2^t * k)`，其中 `t` 是目标值，`k` 是每个组合的最大长度 | `O(n * target * k)`，其中 `n` 是候选数组的长度，`target` 是目标金额，`k` 是每个组合的最大长度 |
+| **空间复杂度**        | `O(target / min(candidates))`（递归栈的最大深度） + `O(C * k)`（存储结果的空间）| `O(target * k)`，其中 `k` 是每个组合的最大长度 |
+| **算法复杂度**        | 简单易懂，直接实现；递归和回溯容易理解和实现 | 实现相对复杂，需要正确管理和更新状态数组 |
+| **适用情况**          | 适合需要生成所有组合的情况，尤其是组合数量较少的情况 | 适合当组合数很多时，需要优化和避免重复计算的情况 |
+| **剪枝**              | 支持剪枝（例如，当当前组合的和超过目标值时提前返回） | 动态规划本身通过状态转移避免了重复计算 |
+| **结果排序和去重**    | 自然避免重复，通过递归顺序生成组合；最终结果通常已排序 | 结果存储中需确保唯一性；可能需要额外的步骤来去重（如排序和使用 `Set`） |
+| **使用场景**          | 适合解空间较小的情况，或者需要所有可能组合的场景 | 适合状态空间较大的情况，利用动态规划优化计算 |
+
+### 回溯法
+
+#### 代码示例
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(result, new ArrayList<>(), candidates, target, 0);
+        return result;
+    }
+
+    private void backtrack(List<List<Integer>> result, List<Integer> tempList, int[] candidates, int remain, int start) {
+        if (remain < 0) {
+            return; // 超过目标，返回
+        } else if (remain == 0) {
+            result.add(new ArrayList<>(tempList)); // 找到一个组合
+        } else {
+            for (int i = start; i < candidates.length; i++) {
+                tempList.add(candidates[i]); // 做选择
+                backtrack(result, tempList, candidates, remain - candidates[i], i); // 递归
+                tempList.remove(tempList.size() - 1); // 撤销选择
+            }
+        }
+    }
+}
+```
+
+### 动态规划
+
+#### 代码示例（使用 `HashSet` 确保唯一性）
+
+```java
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        // 使用 HashSet 来存储组合以避免重复
+        Set<List<Integer>>[] dp = new HashSet[target + 1];
+
+        // 初始化 DP 数组
+        for (int i = 0; i <= target; i++) {
+            dp[i] = new HashSet<>();
+        }
+
+        // 填充 DP 数组
+        for (int i = 0; i <= target; i++) {
+            for (int candidate : candidates) {
+                if (i == candidate) {
+                    List<Integer> newList = new ArrayList<>();
+                    newList.add(candidate);
+                    dp[i].add(newList);
+                } else if (i > candidate) {
+                    for (List<Integer> combination : dp[i - candidate]) {
+                        List<Integer> newCombination = new ArrayList<>(combination);
+                        newCombination.add(candidate);
+                        // 对每个新组合进行排序以确保唯一性
+                        Collections.sort(newCombination);
+                        dp[i].add(newCombination);
+                    }
+                }
+            }
+        }
+
+        // 转换 HashSet 到 List
+        // 由于 HashSet 去重已处理，因此转换成 List 以进行返回
+        return new ArrayList<>(dp[target]);
+    }
+}
+```
+
+### 总结
+
+- **回溯法**：
+  - 更容易实现并理解。
+  - 适合需要生成所有组合的情况。
+  - 可能会处理较少的组合量，因此在组合数较少时效果较好。
+  - 自然避免组合重复，因为组合是按顺序生成的。
+
+- **动态规划**：
+  - 适合处理较大的数据量和复杂的状态转移。
+  - 实现较复杂，但能有效减少计算重复。
+  - 需要处理去重，特别是当组合的数量较多时。
+
+选择哪种方法取决于具体的问题规模和需求。对于较小规模或较少组合的情况，回溯法可能是合适的；对于较大规模的情况，动态规划可能会更高效。
